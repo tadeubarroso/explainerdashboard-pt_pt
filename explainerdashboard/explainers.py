@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 __all__ = [
     "BaseExplainer",
     "ClassifierExplainer",
@@ -179,9 +177,9 @@ class BaseExplainer(ABC):
 
         if permutation_cv is not None:
             warnings.warn(
-                "O parâmetro permutation_cv foi descontinuado! Por favor, use " # Traduzido
-                "o novo parâmetro `cv`! (Que agora também funciona para " # Traduzido
-                "calcular métricas validadas cruzadamente!)" # Traduzido
+                "Parameter permutation_cv has been deprecated! Please use "
+                "the new parameter `cv` instead! (Which now also works for "
+                "calculating cross-validated metrics!)"
             )
             if cv is None:
                 cv = permutation_cv
@@ -198,15 +196,15 @@ class BaseExplainer(ABC):
                             transformer_pipeline, X_background
                         )
                     print(
-                        "Pipeline sklearn/imblearn detetada e extraídos com sucesso o dataframe de " # Traduzido
-                        "saída final com nomes de colunas e o modelo final..." # Traduzido
+                        "Detected sklearn/imblearn Pipeline and succesfully extracted final "
+                        "output dataframe with column names and final model..."
                     )
                 except:
                     print(
-                        "Aviso: Falha ao extrair um transformador de dados com nomes de colunas e modelo final " # Traduzido
-                        "do Pipeline. A definir shap='kernel' para usar " # Traduzido
-                        "o (mais lento e aproximado) shap.KernelExplainer agnóstico ao modelo " # Traduzido
-                        "!" # Traduzido
+                        "Warning: Failed to extract a data transformer with column names and final "
+                        "model from the Pipeline. So setting shap='kernel' to use "
+                        "the (slower and approximate) model-agnostic shap.KernelExplainer "
+                        "instead!"
                     )
                     shap = "kernel"
 
@@ -222,17 +220,17 @@ class BaseExplainer(ABC):
 
         if safe_isinstance(model, "xgboost.core.Booster"):
             raise ValueError(
-                "Para modelos xgboost, atualmente apenas os wrappers compatíveis com " # Traduzido
-                "scikit-learn xgboost.sklearn.XGBClassifier e " # Traduzido
-                "xgboost.sklearn.XGBRegressor são suportados, por favor use esses " # Traduzido
-                "em vez de xgboost.Booster!" # Traduzido
+                "For xgboost models, currently only the scikit-learn "
+                "compatible wrappers xgboost.sklearn.XGBClassifier and "
+                "xgboost.sklearn.XGBRegressor are supported, so please use those "
+                "instead of xgboost.Booster!"
             )
 
         if safe_isinstance(model, "lightgbm.Booster"):
             raise ValueError(
-                "Para lightgbm, atualmente apenas os wrappers compatíveis com scikit-learn " # Traduzido
-                "lightgbm.LGBMClassifier e lightgbm.LGBMRegressor " # Traduzido
-                "são suportados, por favor use esses em vez de lightgbm.Booster!" # Traduzido
+                "For lightgbm, currently only the scikit-learn "
+                "compatible wrappers lightgbm.LGBMClassifier and lightgbm.LGBMRegressor "
+                "are supported, so please use those instead of lightgbm.Booster!"
             )
 
         self.onehot_cols, self.onehot_dict = parse_cats(self.X, cats)
@@ -252,12 +250,12 @@ class BaseExplainer(ABC):
         self.onehot_notencoded = {col: "NOT_ENCODED" for col in self.onehot_cols}
         if cats_notencoded is not None:
             assert isinstance(cats_notencoded, dict), (
-                "cats_notencoded deve ser um dict mapeando uma coluna onehot para um " # Traduzido
-                " valor ausente, ex. cats_notencoded={'Deck': 'Deck Desconhecido'}...!" # Traduzido
+                "cats_notencoded should be a dict mapping a onehot col to a "
+                " missing value, e.g. cats_notencoded={'Deck': 'Unknown Deck'}...!"
             )
             assert set(cats_notencoded.keys()).issubset(self.onehot_cols), (
-                "As seguintes chaves em cats_notencoded não estão em cats:" # Traduzido
-                f"{list(set(cats_notencoded.keys()) - set(self.onehot_cols))}!" # Traduzido
+                "The following keys in cats_notencoded are not in cats:"
+                f"{list(set(cats_notencoded.keys()) - set(self.onehot_cols))}!"
             )
             self.onehot_notencoded.update(cats_notencoded)
 
@@ -269,9 +267,9 @@ class BaseExplainer(ABC):
                 self.X[col] = self.X[col].astype("category")
             if not isinstance(self.model, Pipeline):
                 print(
-                    f"Aviso: Detetadas as seguintes colunas categóricas: {self.categorical_cols}. " # Traduzido
-                    "Infelizmente, por agora, os valores de interação SHAP não funcionam com" # Traduzido
-                    "colunas categóricas.", # Traduzido
+                    f"Warning: Detected the following categorical columns: {self.categorical_cols}. "
+                    "Unfortunately for now shap interaction values do not work with"
+                    "categorical columns.",
                     flush=True,
                 )
                 self.interactions_should_work = False
@@ -282,7 +280,7 @@ class BaseExplainer(ABC):
                     y = y.squeeze()
                 else:
                     raise ValueError(
-                        "y deve ser um pd.Series ou np.ndarray, não um pd.DataFrame!" # Traduzido
+                        "y should be a pd.Series or np.ndarray not a pd.DataFrame!"
                     )
 
             self.y = pd.Series(y.squeeze()).astype(precision)
@@ -291,9 +289,7 @@ class BaseExplainer(ABC):
             self.y = pd.Series(np.full(len(X), np.nan))
             self.y_missing = True
         if self.y.name is None:
-            self.y.name = "Alvo" # Traduzido default
-        else:
-            self.y.name = y.name # Mantém nome original se existir
+            self.y.name = "Target"
 
         self.metric = permutation_metric
         self.shap_kwargs = shap_kwargs or {}
@@ -312,44 +308,44 @@ class BaseExplainer(ABC):
             else:
                 self.shap = "kernel"
                 print(
-                    "AVISO: Parâmetro shap='guess', mas falhou ao adivinhar o " # Traduzido
-                    f"tipo de explicador SHAP a usar para {model_str}. " # Traduzido
-                    "A usar por defeito o shap.KernelExplainer agnóstico ao modelo " # Traduzido
-                    "(shap='kernel'). No entanto, isto será lento, portanto, se o seu modelo for " # Traduzido
-                    "compatível com, por exemplo, shap.TreeExplainer ou shap.LinearExplainer " # Traduzido
-                    "passe shap='tree' ou shap='linear'!" # Traduzido
+                    "WARNING: Parameter shap='guess', but failed to guess the "
+                    f"type of shap explainer to use for {model_str}. "
+                    "Defaulting to the model agnostic shap.KernelExplainer "
+                    "(shap='kernel'). However this will be slow, so if your model is "
+                    "compatible with e.g. shap.TreeExplainer or shap.LinearExplainer "
+                    "then pass shap='tree' or shap='linear'!"
                 )
         else:
             if shap in {"deep", "torch"}:
                 raise ValueError(
-                    "ERRO! Apenas redes neuronais PyTorch encapsuladas num wrapper NeuralNet " # Traduzido
-                    "compatível com sklearn skorch são suportadas por agora! " # Traduzido
-                    "Veja https://github.com/skorch-dev/skorch" # Traduzido
+                    "ERROR! Only PyTorch neural networks wrapped in a skorch "
+                    "sklearn-compatible NeuralNet wrapper are supported for now! "
+                    "See https://github.com/skorch-dev/skorch"
                 )
             assert shap in ["tree", "linear", "deep", "kernel", "skorch"], (
-                "ERRO! Apenas shap='guess', 'tree', 'linear', 'kernel' ou 'skorch' são " # Traduzido
-                " suportados por agora!" # Traduzido
+                "ERROR! Only shap='guess', 'tree', 'linear', ' kernel' or 'skorch' are "
+                " supported for now!"
             )
             self.shap = shap
         if self.shap in {"kernel", "skorch", "linear"}:
             print(
-                f"AVISO: Para shap='{self.shap}', os valores de interação SHAP infelizmente " # Traduzido
-                "não podem ser calculados!" # Traduzido
+                f"WARNING: For shap='{self.shap}', shap interaction values can unfortunately "
+                "not be calculated!"
             )
             self.interactions_should_work = False
         if self.shap == "skorch":
             print(
-                "AVISO: Para shap='skorch' a verificação de aditividade tende a falhar, " # Traduzido
-                "pode definir shap_kwargs=dict(check_additivity=False) para suprimir " # Traduzido
-                "este erro (por sua conta e risco)!" # Traduzido
+                "WARNING: For shap='skorch' the additivity check tends to fail, "
+                "you set set shap_kwargs=dict(check_additivity=False) to supress "
+                "this error (at your own risk)!"
             )
 
         self.model_output = model_output
 
         if idxs is not None:
             assert len(idxs) == len(self.X) == len(self.y), (
-                "idxs deve ter o mesmo comprimento que X mas não tem: " # Traduzido
-                f"len(idxs)={len(idxs)} mas len(X)={len(self.X)}!" # Traduzido
+                "idxs should be same length as X but is not: "
+                f"len(idxs)={len(idxs)} but  len(X)={len(self.X)}!"
             )
             self.idxs = pd.Index(idxs).astype(str)
         else:
@@ -366,16 +362,16 @@ class BaseExplainer(ABC):
             if self.idxs.name is not None:
                 self.index_name = self.idxs.name.capitalize()
             else:
-                self.index_name = "Índice" # Traduzido default
+                self.index_name = "Index"
         else:
             self.idxs.name = index_name.capitalize()
             self.index_name = index_name.capitalize()
         self.descriptions = {} if descriptions is None else descriptions
         if not isinstance(self.descriptions, dict):
             raise ValueError(
-                "ERRO: o parâmetro descriptions deve ser um dict com nomes de características como chaves, " # Traduzido
-                "e descrições de características como valores, mas passou um " # Traduzido
-                f"{type(self.descriptions)}!" # Traduzido
+                "ERROR: parameter descriptions should be a dict with feature names as keys, "
+                "and feature descriptions as values, but you passed a "
+                f"{type(self.descriptions)}!"
             )
         self.target = target if target is not None else self.y.name
         self.n_jobs = n_jobs
@@ -426,7 +422,7 @@ class BaseExplainer(ABC):
                 if (filepath.parent / (filepath.name + ".joblib")).exists():
                     filepath = filepath.parent / (filepath.name + ".joblib")
                 else:
-                    raise ValueError(f"Não foi possível encontrar o ficheiro: {str(filepath)}") # Traduzido
+                    raise ValueError(f"Cannot find file: {str(filepath)}")
             import joblib
 
             return joblib.load(filepath)
@@ -444,9 +440,9 @@ class BaseExplainer(ABC):
         filepath = Path(filepath)
         if self.shap == "kernel" and not str(filepath).endswith(".dill"):
             print(
-                "Aviso! KernelExplainer não funciona com joblib ou pickle, " # Traduzido
-                "mas apenas com dill, por isso especifique, por exemplo, filepath='explainer.dill' " # Traduzido
-                "para usar dill em vez de joblib ou pickle.", # Traduzido
+                "Warning! KernelExplainer does not work with joblib or pickle, "
+                "but only with dill, so specify e.g. filepath='explainer.dill' "
+                "to use dill instead of joblib or pickle.",
                 flush=True,
             )
         if hasattr(self, "_lock"):
@@ -513,7 +509,7 @@ class BaseExplainer(ABC):
                 explainerfile=explainerfile,
                 data_target=self.target,
                 data_index=self.idxs.name,
-                explainer_type="classificador" if self.is_classifier else "regressão", # Traduzido
+                explainer_type="classifier" if self.is_classifier else "regression",
                 dashboard_yaml=dashboard_yaml,
                 params=self._params_dict,
             )
@@ -626,7 +622,7 @@ class BaseExplainer(ABC):
         """
         assert callable(
             func
-        ), f"{func} não é chamável! Passe uma função ou um método!" # Traduzido
+        ), f"{func} is not a callable! pass either a function or a method!"
         argspec = inspect.getfullargspec(func).args
         if argspec == ["self", "index"]:
             self._index_exists_func = MethodType(func, self)
@@ -634,9 +630,9 @@ class BaseExplainer(ABC):
             self._index_exists_func = func
         else:
             raise ValueError(
-                f"O parâmetro func deve ser uma função {func.__name__}(index) " # Traduzido
-                f"ou um método {func.__name__}(self, index)! Em vez disso, você " # Traduzido
-                f"passou func={func.__name__}{inspect.signature(func)}" # Traduzido
+                f"Parameter func should either be a function {func.__name__}(index) "
+                f"or a method {func.__name__}(self, index)! Instead you "
+                f"passed func={func.__name__}{inspect.signature(func)}"
             )
 
     def get_index_list(self) -> pd.Series:
@@ -660,7 +656,7 @@ class BaseExplainer(ABC):
         """
         assert callable(
             func
-        ), f"{func} não é chamável! Passe uma função ou um método!" # Traduzido
+        ), f"{func} is not a callable! pass either a function or a method!"
         argspec = inspect.getfullargspec(func).args
         if argspec == ["self"]:
             self._get_index_list_func = MethodType(func, self)
@@ -668,9 +664,9 @@ class BaseExplainer(ABC):
             self._get_index_list_func = func
         else:
             raise ValueError(
-                f"O parâmetro func deve ser uma função {func.__name__}() " # Traduzido
-                f"ou um método {func.__name__}(self)! Em vez disso, você " # Traduzido
-                f"passou func={func.__name__}{inspect.signature(func)}" # Traduzido
+                f"Parameter func should either be a function {func.__name__}() "
+                f"or a method {func.__name__}(self)! Instead you "
+                f"passed func={func.__name__}{inspect.signature(func)}"
             )
 
     def get_X_row(self, index, merge=False):
@@ -685,8 +681,8 @@ class BaseExplainer(ABC):
 
         if not matching_cols(X_row.columns, self.columns):
             raise ValueError(
-                f"as colunas não correspondem! Obteve {X_row.columns}, mas esperava" # Traduzido
-                f" {self.columns}" # Traduzido
+                f"columns do not match! Got {X_row.columns}, but was"
+                f"expecting {self.columns}"
             )
         if merge:
             X_row = merge_categorical_columns(
@@ -702,7 +698,7 @@ class BaseExplainer(ABC):
         """
         assert callable(
             func
-        ), f"{func} não é chamável! Passe uma função ou um método!" # Traduzido
+        ), f"{func} is not a callable! pass either a function or a method!"
         argspec = inspect.getfullargspec(func).args
         if argspec == ["self", "index"]:
             self._get_X_row_func = MethodType(func, self)
@@ -710,9 +706,9 @@ class BaseExplainer(ABC):
             self._get_X_row_func = func
         else:
             raise ValueError(
-                f"O parâmetro func deve ser uma função {func.__name__}(index) " # Traduzido
-                f"ou um método {func.__name__}(self, index)! Em vez disso, você " # Traduzido
-                f"passou func={func.__name__}{inspect.signature(func)}" # Traduzido
+                f"Parameter func should either be a function {func.__name__}(index) "
+                f"or a method {func.__name__}(self, index)! Instead you "
+                f"passed func={func.__name__}{inspect.signature(func)}"
             )
 
     def get_y(self, index):
@@ -728,7 +724,7 @@ class BaseExplainer(ABC):
                 try:
                     return y.item()
                 except:
-                    raise ValueError(f"Não é possível transformar y num único item: {y}") # Traduzido
+                    raise ValueError(f"Can't turn y into a single item: {y}")
         else:
             raise IndexNotFoundError(index=index)
 
@@ -740,7 +736,7 @@ class BaseExplainer(ABC):
         """
         assert callable(
             func
-        ), f"{func} não é chamável! Passe uma função ou um método!" # Traduzido
+        ), f"{func} is not a callable! pass either a function or a method!"
         argspec = inspect.getfullargspec(func).args
         if argspec == ["self", "index"]:
             self._get_y_func = func = MethodType(func, self)
@@ -748,9 +744,9 @@ class BaseExplainer(ABC):
             self._get_y_func = func = func
         else:
             raise ValueError(
-                f"O parâmetro func deve ser uma função {func.__name__}(index) " # Traduzido
-                f"ou um método {func.__name__}(self, index)! Em vez disso, você " # Traduzido
-                f"passou func={func.__name__}{inspect.signature(func)}" # Traduzido
+                f"Parameter func should either be a function {func.__name__}(index) "
+                f"or a method {func.__name__}(self, index)! Instead you "
+                f"passed func={func.__name__}{inspect.signature(func)}"
             )
 
     def get_row_from_input(
@@ -791,9 +787,9 @@ class BaseExplainer(ABC):
                 return df
         else:
             raise ValueError(
-                f"len inputs {len(inputs)} deve ser o mesmo comprimento que " # Traduzido
-                f"explainer.merged_cols ({len(self.merged_cols)}) ou " # Traduzido
-                f"explainer.columns ({len(self.columns)})!" # Traduzido
+                f"len inputs {len(inputs)} should be the same length as either "
+                f"explainer.merged_cols ({len(self.merged_cols)}) or "
+                f"explainer.columns ({len(self.columns)})!"
             )
 
     def get_col(self, col):
@@ -808,7 +804,7 @@ class BaseExplainer(ABC):
           pd.Series with values of col
 
         """
-        assert col in self.columns or col in self.onehot_cols, f"{col} não está nas colunas!" # Traduzido
+        assert col in self.columns or col in self.onehot_cols, f"{col} not in columns!"
 
         if col in self.onehot_cols:
             return self.X_cats[col]
@@ -833,11 +829,11 @@ class BaseExplainer(ABC):
         """
         assert (col in self.X.columns) or (
             col in self.onehot_cols
-        ), f"{col} não está nas colunas do conjunto de dados" # Traduzido
+        ), f"{col} not in columns of dataset"
         if index is not None:
             X_row = self.get_X_row(index)
         if X_row is not None:
-            assert X_row.shape[0] == 1, "X_Row deve ser um dataframe de linha única!" # Traduzido
+            assert X_row.shape[0] == 1, "X_Row should be single row dataframe!"
 
             if matching_cols(X_row.columns, self.merged_cols):
                 col_value = X_row[col].item()
@@ -845,7 +841,7 @@ class BaseExplainer(ABC):
             else:
                 assert matching_cols(
                     X_row.columns, self.columns
-                ), "X_row deve ter as mesmas colunas que explainer.columns ou explainer.merged_cols!" # Traduzido
+                ), "X_row should have the same columns as explainer.columns or explainer.merged_cols!"
                 if col in self.onehot_cols:
                     col_value = retrieve_onehot_value(
                         X_row, col, self.onehot_dict[col], self.onehot_notencoded[col]
@@ -864,7 +860,7 @@ class BaseExplainer(ABC):
                 prediction = self.model.predict(X_row)[0].squeeze()
             return col_value, prediction
         else:
-            raise ValueError("Precisa de passar index ou X_row!") # Traduzido
+            raise ValueError("You need to pass either index or X_row!")
 
     def description(self, col):
         """returns the written out description of what feature col means
@@ -910,11 +906,10 @@ class BaseExplainer(ABC):
             cols = self.columns_ranked_by_shap()
         else:
             raise ValueError(
-                "O parâmetro sort de get_description_df() deve ser " # Traduzido
-                f"'alphabet' ou 'shap', mas passou {sort}!" # Traduzido
+                "get_description_df() parameter sort should be either"
+                f"'alphabet' or 'shap', but you passed {sort}!"
             )
-        # Traduzido nomes de colunas do DataFrame resultante
-        return pd.DataFrame(dict(Característica=cols, Descrição=self.description_list(cols)))
+        return pd.DataFrame(dict(Feature=cols, Description=self.description_list(cols)))
 
     def ordered_cats(self, col, topx=None, sort="alphabet", pos_label=None):
         """Return a list of categories in an categorical column, sorted
@@ -935,7 +930,7 @@ class BaseExplainer(ABC):
         """
         if pos_label is None:
             pos_label = self.pos_label
-        assert col in self.cat_cols, f"{col} não é uma característica categórica!" # Traduzido
+        assert col in self.cat_cols, f"{col} is not a categorical feature!"
         if col in self.onehot_cols:
             X = self.X_cats
         else:
@@ -979,14 +974,14 @@ class BaseExplainer(ABC):
                 )
         else:
             raise ValueError(
-                f"sort='{sort}', mas deveria estar em {{'alphabet', 'freq', 'shap'}}" # Traduzido
+                f"sort='{sort}', but should be in {{'alphabet', 'freq', 'shap'}}"
             )
 
     @property
     def preds(self):
         """returns model model predictions"""
         if not hasattr(self, "_preds"):
-            print("A calcular previsões...", flush=True) # Traduzido
+            print("Calculating predictions...", flush=True)
             if self.shap == "skorch":  # skorch model.predict need np.array
                 self._preds = (
                     self.model.predict(self.X.values).squeeze().astype(self.precision)
@@ -1002,7 +997,7 @@ class BaseExplainer(ABC):
     def pred_percentiles(self, pos_label=None):
         """returns percentile rank of model predictions"""
         if not hasattr(self, "_pred_percentiles"):
-            print("A calcular percentis de previsão...", flush=True) # Traduzido
+            print("Calculating prediction percentiles...", flush=True)
             self._pred_percentiles = (
                 pd.Series(self.preds).rank(method="min").divide(len(self.preds)).values
             ).astype(self.precision)
@@ -1012,7 +1007,7 @@ class BaseExplainer(ABC):
     def permutation_importances(self, pos_label=None):
         """Permutation importances"""
         if not hasattr(self, "_perm_imps"):
-            print("A calcular importâncias...", flush=True) # Traduzido
+            print("Calculating importances...", flush=True)
             self._perm_imps = cv_permutation_importances(
                 self.model,
                 self.X,
@@ -1062,19 +1057,19 @@ class BaseExplainer(ABC):
             NoX_str = ", X_background" if self.X_background is not None else ""
             if self.shap == "tree":
                 print(
-                    "A gerar self.shap_explainer = " # Traduzido
-                    f"shap.TreeExplainer(model{NoX_str})" # Traduzido
+                    "Generating self.shap_explainer = "
+                    f"shap.TreeExplainer(model{NoX_str})"
                 )
                 self._shap_explainer = shap.TreeExplainer(self.model)
             elif self.shap == "linear":
                 if self.X_background is None:
                     print(
-                        "Aviso: valores SHAP para shap.LinearExplainer são calculados " # Traduzido
-                        "contra X_background, mas o parâmetro " # Traduzido
-                        "X_background=None, a usar X em vez disso" # Traduzido
+                        "Warning: shap values for shap.LinearExplainer get "
+                        "calculated against X_background, but paramater "
+                        "X_background=None, so using X instead"
                     )
                 print(
-                    f"A gerar self.shap_explainer = shap.LinearExplainer(model{X_str})..." # Traduzido
+                    f"Generating self.shap_explainer = shap.LinearExplainer(model{X_str})..."
                 )
                 self._shap_explainer = shap.LinearExplainer(
                     self.model,
@@ -1082,13 +1077,13 @@ class BaseExplainer(ABC):
                 )
             elif self.shap == "deep":
                 print(
-                    "A gerar self.shap_explainer = " # Traduzido
-                    "shap.DeepExplainer(model, X_background)" # Traduzido
+                    "Generating self.shap_explainer = "
+                    "shap.DeepExplainer(model, X_background)"
                 )
                 print(
-                    "Aviso: valores SHAP para shap.DeepExplainer são calculados " # Traduzido
-                    "contra X_background, mas o parâmetro " # Traduzido
-                    "X_background=None, a usar shap.sample(X, 5) em vez disso" # Traduzido
+                    "Warning: shap values for shap.DeepExplainer get "
+                    "calculated against X_background, but paramater "
+                    "X_background=None, so using shap.sample(X, 5) instead"
                 )
                 self._shap_explainer = shap.DeepExplainer(
                     self.model,
@@ -1098,13 +1093,13 @@ class BaseExplainer(ABC):
                 )
             elif self.shap == "skorch":
                 print(
-                    "A gerar self.shap_explainer = " # Traduzido
-                    "shap.DeepExplainer(model, X_background)" # Traduzido
+                    "Generating self.shap_explainer = "
+                    "shap.DeepExplainer(model, X_background)"
                 )
                 print(
-                    "Aviso: valores SHAP para shap.DeepExplainer são calculados " # Traduzido
-                    "contra X_background, mas o parâmetro " # Traduzido
-                    "X_background=None, a usar shap.sample(X, 5) em vez disso" # Traduzido
+                    "Warning: shap values for shap.DeepExplainer get "
+                    "calculated against X_background, but paramater "
+                    "X_background=None, so using shap.sample(X, 5) instead"
                 )
                 import torch
 
@@ -1117,13 +1112,13 @@ class BaseExplainer(ABC):
             elif self.shap == "kernel":
                 if self.X_background is None:
                     print(
-                        "Aviso: valores SHAP para shap.KernelExplainer são calculados " # Traduzido
-                        "contra X_background, mas o parâmetro " # Traduzido
-                        "X_background=None, a usar shap.sample(X, 50) em vez disso" # Traduzido
+                        "Warning: shap values for shap.KernelExplainer get "
+                        "calculated against X_background, but paramater "
+                        "X_background=None, so using shap.sample(X, 50) instead"
                     )
                 print(
-                    "A gerar self.shap_explainer = " # Traduzido
-                    f"shap.KernelExplainer(model, {X_str})..." # Traduzido
+                    "Generating self.shap_explainer = "
+                    f"shap.KernelExplainer(model, {X_str})..."
                 )
 
                 def model_predict(data_asarray):
@@ -1159,7 +1154,7 @@ class BaseExplainer(ABC):
     def get_shap_values_df(self, pos_label=None):
         """SHAP values calculated using the shap library"""
         if not hasattr(self, "_shap_values_df"):
-            print("A calcular valores SHAP...", flush=True) # Traduzido
+            print("Calculating shap values...", flush=True)
             if self.shap == "skorch":
                 import torch
 
@@ -1245,24 +1240,24 @@ class BaseExplainer(ABC):
                 shap_row, self.onehot_dict, self.merged_cols
             )
         else:
-            raise ValueError("Deve passar index ou X_row!") # Traduzido
+            raise ValueError("you should either pas index or X_row!")
         return shap_row
 
     @insert_pos_label
     def shap_interaction_values(self, pos_label=None):
         """SHAP interaction values calculated using shap library"""
         assert self.shap != "linear", (
-            "Infelizmente, shap.LinearExplainer não fornece " # Traduzido
-            "valores de interação SHAP! Portanto, não há separador de interações!" # Traduzido
+            "Unfortunately shap.LinearExplainer does not provide "
+            "shap interaction values! So no interactions tab!"
         )
         if not hasattr(self, "_shap_interaction_values"):
-            print("A calcular valores de interação SHAP...", flush=True) # Traduzido
+            print("Calculating shap interaction values...", flush=True)
             if self.shap == "tree":
                 print(
-                    "Lembrete: A complexidade computacional do TreeShap é O(TLD^2), " # Traduzido
-                    "onde T é o número de árvores, L é o número máximo de" # Traduzido
-                    " folhas em qualquer árvore e D a profundidade máxima de qualquer árvore. Assim, " # Traduzido
-                    "reduzir estes valores acelerará o cálculo.", # Traduzido
+                    "Reminder: TreeShap computational complexity is O(TLD^2), "
+                    "where T is the number of trees, L is the maximum number of"
+                    " leaves in any tree and D the maximal depth of any tree. So "
+                    "reducing these will speed up the calculation.",
                     flush=True,
                 )
             self._shap_interaction_values = self.shap_explainer.shap_interaction_values(
@@ -1286,15 +1281,15 @@ class BaseExplainer(ABC):
 
         """
         if not isinstance(shap_interaction_values, np.ndarray):
-            raise ValueError("shap_interaction_values deve ser um array numpy") # Traduzido
+            raise ValueError("shap_interaction_values should be a numpy array")
         if not shap_interaction_values.shape == (
             len(self.X),
             len(self.original_cols),
             len(self.original_cols),
         ):
             raise ValueError(
-                "shap interaction_values deve ter a forma " # Traduzido
-                f"({len(self.X)}, {len(self.original_cols)}, {len(self.original_cols)})!" # Traduzido
+                "shap interaction_values should be of shape "
+                f"({len(self.X)}, {len(self.original_cols)}, {len(self.original_cols)})!"
             )
 
         self._shap_interaction_values = merge_categorical_shap_interaction_values(
@@ -1311,9 +1306,9 @@ class BaseExplainer(ABC):
                 .mean()
                 .sort_values(ascending=False)
                 .to_frame()
-                .rename_axis(index="Feature") # Mantido "Feature" como chave interna
+                .rename_axis(index="Feature")
                 .reset_index()
-                .rename(columns={0: "MEAN_ABS_SHAP"}) # Mantido "MEAN_ABS_SHAP" como chave interna
+                .rename(columns={0: "MEAN_ABS_SHAP"})
             )
         return self._mean_abs_shap_df
 
@@ -1402,7 +1397,7 @@ class BaseExplainer(ABC):
           np.array(N,N): shap_interaction_values
 
         """
-        assert col in self.merged_cols, f"{col} não está em self.merged_cols!" # Traduzido
+        assert col in self.merged_cols, f"{col} not in self.merged_cols!"
         if interact_col is None:
             return self.shap_interaction_values(pos_label)[
                 :, self.merged_cols.get_loc(col), :
@@ -1410,7 +1405,7 @@ class BaseExplainer(ABC):
         else:
             assert (
                 interact_col in self.merged_cols
-            ), f"{interact_col} não está em self.merged_cols!" # Traduzido
+            ), f"{interact_col} not in self.merged_cols!"
             return self.shap_interaction_values(pos_label)[
                 :, self.merged_cols.get_loc(col), self.merged_cols.get_loc(interact_col)
             ]
@@ -1486,7 +1481,7 @@ class BaseExplainer(ABC):
             )
 
         print(
-            "Uso total de memória do Explainer (aproximado): ", # Traduzido
+            "Explainer total memory usage (approximate): ",
             size_to_string(memory_df.bytes.sum()),
             flush=True,
         )
@@ -1573,7 +1568,7 @@ class BaseExplainer(ABC):
         """
         assert (
             kind == "shap" or kind == "permutation"
-        ), "kind deve ser 'shap' ou 'permutation'!" # Traduzido
+        ), "kind should either be 'shap' or 'permutation'!"
         if kind == "permutation":
             return self.get_permutation_importances_df(topx, cutoff, pos_label)
         elif kind == "shap":
@@ -1606,7 +1601,7 @@ class BaseExplainer(ABC):
 
         """
         if index is None and X_row is None:
-            raise ValueError("Deve passar index ou X_row!") # Traduzido
+            raise ValueError("Either index or X_row should be passed!")
         if sort == "importance":
             if cutoff is None:
                 cols = self.columns_ranked_by_shap()
@@ -1630,7 +1625,7 @@ class BaseExplainer(ABC):
             else:
                 assert matching_cols(
                     X_row.columns, self.columns
-                ), "X_row deve ter as mesmas colunas que self.X ou self.merged_cols!" # Traduzido
+                ), "X_row should have the same columns as self.X or self.merged_cols!"
                 X_row_merged = merge_categorical_columns(
                     X_row,
                     self.onehot_dict,
@@ -1747,7 +1742,7 @@ class BaseExplainer(ABC):
         """
         assert (
             col in self.X.columns or col in self.onehot_cols
-        ), f"{col} não está nas colunas do conjunto de dados" # Traduzido
+        ), f"{col} not in columns of dataset"
         if col in self.onehot_cols:
             grid_values = self.ordered_cats(col, n_grid_points, sort)
             if index is not None or X_row is not None:
@@ -1788,7 +1783,7 @@ class BaseExplainer(ABC):
             else:
                 assert matching_cols(
                     X_row.columns, self.columns
-                ), "X_row deve ter as mesmas colunas que self.X ou self.merged_cols!" # Traduzido
+                ), "X_row should have the same columns as self.X or self.merged_cols!"
 
             if isinstance(features, str) and drop_na:  # regular col, not onehotencoded
                 sample_size = min(
@@ -1854,13 +1849,13 @@ class BaseExplainer(ABC):
         )
         if kind == "shap":
             if self.target:
-                title = f"Impacto médio na previsão de {self.target}<br>(valor SHAP absoluto médio)" # Traduzido
+                title = f"Average impact on predicted {self.target}<br>(mean absolute SHAP value)"
             else:
-                title = "Impacto médio na previsão<br>(valor SHAP absoluto médio)" # Traduzido
+                title = "Average impact on prediction<br>(mean absolute SHAP value)"
 
             units = self.units
         else:
-            title = f"Importâncias por Permutação <br>(diminuição na métrica '{self.metric.__name__}' com característica aleatorizada)" # Traduzido
+            title = f"Permutation Importances <br>(decrease in metric '{self.metric.__name__}'' with randomized feature)"
             units = ""
         if self.descriptions:
             descriptions = self.description_list(importances_df.Feature)
@@ -1907,20 +1902,20 @@ class BaseExplainer(ABC):
             pos_label_str = self.labels[pos_label]
             if self.model_output == "probability":
                 if self.target:
-                    title = f"Impacto da característica na probabilidade prevista {self.target}={pos_label_str} <br> (Valores SHAP)" # Traduzido
+                    title = f"Impact of feature on predicted probability {self.target}={pos_label_str} <br> (SHAP values)"
                 else:
                     title = (
-                        "Impacto da Característica na Probabilidade de Previsão <br> (Valores SHAP)" # Traduzido
+                        "Impact of Feature on Prediction probability <br> (SHAP values)"
                     )
             elif self.model_output == "logodds":
-                title = "Impacto da Característica no logodds previsto <br> (Valores SHAP)" # Traduzido
+                title = "Impact of Feature on predicted logodds <br> (SHAP values)"
         elif self.is_regression:
             if self.target:
                 title = (
-                    f"Impacto da Característica na Previsão de {self.target} <br> (Valores SHAP)" # Traduzido
+                    f"Impact of Feature on Predicted {self.target} <br> (SHAP values)"
                 )
             else:
-                title = "Impacto da Característica na Previsão<br> (Valores SHAP)" # Traduzido
+                title = "Impact of Feature on Prediction<br> (SHAP values)"
 
         cols = self.get_importances_df(kind="shap", topx=topx, pos_label=pos_label)[
             "Feature"
@@ -2031,13 +2026,13 @@ class BaseExplainer(ABC):
                 ]
 
             if sample_size is not None and sample_size < len(idx_sample):
-                assert sample_size >= 0, "sample_size deve ser um inteiro positivo!" # Traduzido
+                assert sample_size >= 0, "sample_size should be a positive integer!"
                 idx_sample = np.random.choice(idx_sample, sample_size, replace=False)
 
             if include_index is not None:
                 if isinstance(include_index, str):
                     if include_index not in self.idxs:
-                        raise ValueError(f"{include_index} não encontrado em idxs!") # Traduzido
+                        raise ValueError(f"{include_index} could not be found in idxs!")
                     include_index = self.idxs.get_loc(include_index)
                 if include_index not in idx_sample and include_index < len(self):
                     idx_sample = np.append(idx_sample, include_index)
@@ -2216,7 +2211,7 @@ class BaseExplainer(ABC):
 
         """
         interactions_df = self.get_interactions_df(col, topx=topx, pos_label=pos_label)
-        title = f"Valores médios de interação SHAP para {col}" # Traduzido
+        title = f"Average interaction shap values for {col}"
         return plotly_importances_plot(interactions_df, units=self.units, title=title)
 
     @insert_pos_label
@@ -2257,7 +2252,7 @@ class BaseExplainer(ABC):
         ).iloc[plot_idxs]
         if topx is None:
             topx = len(interact_cols)
-        title = f"Valores de interação SHAP para {col}" # Traduzido
+        title = f"Shap interaction values for {col}"
         return plotly_shap_scatter_plot(
             self.X_merged.iloc[plot_idxs],
             shap_df,
@@ -2323,7 +2318,7 @@ class BaseExplainer(ABC):
             pos_label=pos_label,
             sort=sort,
         )
-        units = "Probabilidade Prevista (%)" if self.model_output == "probability" else self.units # Traduzido
+        units = "Predicted %" if self.model_output == "probability" else self.units
         if index is not None or X_row is not None:
             col_value, pred = self.get_col_value_plus_prediction(
                 col, index=index, X_row=X_row, pos_label=pos_label
@@ -2465,11 +2460,11 @@ class ClassifierExplainer(BaseExplainer):
         )
 
         assert hasattr(model, "predict_proba"), (
-            "para ClassifierExplainer, o modelo deve ser um modelo *classificador* " # Traduzido
-            "compatível com scikit-learn que tenha um método predict_proba(...), " # Traduzido
-            f"não um {type(model)}! Se estiver a usar, por exemplo, um SVM " # Traduzido
-            "com hinge loss (que não suporta predict_proba), pode " # Traduzido
-            "tentar o seguinte monkey patch:\n\n" # Traduzido
+            "for ClassifierExplainer, model should be a scikit-learn "
+            "compatible *classifier* model that has a predict_proba(...) "
+            f"method, so not a {type(model)}! If you are using e.g an SVM "
+            "with hinge loss (which does not support predict_proba), you "
+            "can try the following monkey patch:\n\n"
             "import types\n"
             "def predict_proba(self, X):\n"
             "    pred = self.predict(X)\n"
@@ -2490,9 +2485,9 @@ class ClassifierExplainer(BaseExplainer):
             and not isinstance(self.model, Pipeline)
         ):
             print(
-                "Aviso: Modelos que lidam diretamente com características categóricas " # Traduzido
-                f"como {self.model.__class__.__name__} são incompatíveis com model_output='probability'" # Traduzido
-                "por enquanto. A definir model_output='logodds'...", # Traduzido
+                "Warning: Models that deal with categorical features directly "
+                f"such as {self.model.__class__.__name__} are incompatible with model_output='probability'"
+                " for now. So setting model_output='logodds'...",
                 flush=True,
             )
             self.model_output = "logodds"
@@ -2508,22 +2503,22 @@ class ClassifierExplainer(BaseExplainer):
             self.model, "RandomForestClassifier", "ExtraTreesClassifier"
         ):
             print(
-                "Detetado modelo RandomForestClassifier: " # Traduzido
-                "A alterar tipo de classe para RandomForestClassifierExplainer...", # Traduzido
+                "Detected RandomForestClassifier model: "
+                "Changing class type to RandomForestClassifierExplainer...",
                 flush=True,
             )
             self.__class__ = RandomForestClassifierExplainer
         if str(type(self.model)).endswith("XGBClassifier'>"):
             print(
-                "Detetado modelo XGBClassifier: " # Traduzido
-                "A alterar tipo de classe para XGBClassifierExplainer...", # Traduzido
+                "Detected XGBClassifier model: "
+                "Changing class type to XGBClassifierExplainer...",
                 flush=True,
             )
             self.__class__ = XGBClassifierExplainer
             if len(self.labels) > 2 and self.model_output == "probability":
                 print(
-                    "model_output=='probability' não funciona com modelos XGBClassifier " # Traduzido
-                    "multiclasse, a definir model_output='logodds'..." # Traduzido
+                    "model_output=='probability' does not work with multiclass "
+                    "XGBClassifier models, so settings model_output='logodds'..."
                 )
                 self.model_output = "logodds"
 
@@ -2542,7 +2537,7 @@ class ClassifierExplainer(BaseExplainer):
         elif isinstance(label, str) and label in self.labels:
             self._pos_label = self.pos_label_index(label)
         else:
-            raise ValueError(f"'{label}' não está nas etiquetas (labels)") # Traduzido
+            raise ValueError(f"'{label}' not in labels")
 
     @property
     def pos_label_str(self):
@@ -2554,14 +2549,14 @@ class ClassifierExplainer(BaseExplainer):
         if isinstance(pos_label, int):
             assert pos_label >= 0 and pos_label <= len(
                 self.labels
-            ), f"pos_label={pos_label}, mas deve ser >= 0 e <= {len(self.labels)-1}!" # Traduzido
+            ), f"pos_label={pos_label}, but should be >= 0 and <= {len(self.labels)-1}!"
             return pos_label
         elif isinstance(pos_label, str):
             assert (
                 pos_label in self.labels
-            ), f"Etiqueta pos desconhecida. {pos_label} não está em self.labels!" # Traduzido
+            ), f"Unknown pos_label. {pos_label} not in self.labels!"
             return self.labels.index(pos_label)
-        raise ValueError("pos_label deve ser int ou str em self.labels!") # Traduzido
+        raise ValueError("pos_label should either be int or str in self.labels!")
 
     @insert_pos_label
     def y_binary(self, pos_label):
@@ -2579,10 +2574,10 @@ class ClassifierExplainer(BaseExplainer):
     def pred_probas_raw(self):
         """returns pred_probas with probability for each class"""
         if not hasattr(self, "_pred_probas"):
-            print("A calcular probabilidades de previsão...", flush=True) # Traduzido
+            print("Calculating prediction probabilities...", flush=True)
             assert hasattr(
                 self.model, "predict_proba"
-            ), "modelo não tem um método predict_proba!" # Traduzido
+            ), "model does not have a predict_proba method!"
             if self.shap == "skorch":
                 self._pred_probas = self.model.predict_proba(self.X.values).astype(
                     self.precision
@@ -2599,7 +2594,7 @@ class ClassifierExplainer(BaseExplainer):
     def pred_percentiles_raw(self):
         """ """
         if not hasattr(self, "_pred_percentiles_raw"):
-            print("A calcular percentis de previsão...", flush=True) # Traduzido
+            print("Calculating pred_percentiles...", flush=True)
             self._pred_percentiles_raw = (
                 pd.DataFrame(self.pred_probas_raw)
                 .rank(method="min")
@@ -2623,7 +2618,7 @@ class ClassifierExplainer(BaseExplainer):
         """Permutation importances"""
         if not hasattr(self, "_perm_imps"):
             print(
-                "A calcular importâncias por permutação (se for lento, tente definir o parâmetro n_jobs)...", # Traduzido
+                "Calculating permutation importances (if slow, try setting n_jobs parameter)...",
                 flush=True,
             )
             self._perm_imps = [
@@ -2669,20 +2664,20 @@ class ClassifierExplainer(BaseExplainer):
                     if self.model_output == "probability":
                         if self.X_background is None:
                             print(
-                                f"Nota: model_output=='probability'. Para {model_str} os valores SHAP normalmente são " # Traduzido
-                                "calculados contra X_background, mas o parâmetro X_background=None, " # Traduzido
-                                "a usar X em vez disso" # Traduzido
+                                f"Note: model_output=='probability'. For {model_str} shap values normally get "
+                                "calculated against X_background, but paramater X_background=None, "
+                                "so using X instead"
                             )
                         print(
-                            "A gerar self.shap_explainer = shap.TreeExplainer(model, " # Traduzido
-                            f"{'X_background' if self.X_background is not None else 'X'}" # Traduzido
-                            ", model_output='probability', feature_perturbation='interventional')..." # Traduzido
+                            "Generating self.shap_explainer = shap.TreeExplainer(model, "
+                            f"{'X_background' if self.X_background is not None else 'X'}"
+                            ", model_output='probability', feature_perturbation='interventional')..."
                         )
                         print(
-                            "Nota: Valores de interação SHAP não estarão disponíveis. " # Traduzido
-                            "Se valores SHAP no espaço de probabilidade não forem necessários, pode " # Traduzido
-                            "passar model_output='logodds' para obter valores SHAP em logodds sem a necessidade de " # Traduzido
-                            "um conjunto de dados de fundo e também ter valores de interação SHAP funcionais..." # Traduzido
+                            "Note: Shap interaction values will not be available. "
+                            "If shap values in probability space are not necessary you can "
+                            "pass model_output='logodds' to get shap values in logodds without the need for "
+                            "a background dataset and also working shap interaction values..."
                         )
                         self._shap_explainer = shap.TreeExplainer(
                             self.model,
@@ -2696,7 +2691,7 @@ class ClassifierExplainer(BaseExplainer):
                     else:
                         self.model_output = "logodds"
                         print(
-                            f"A gerar self.shap_explainer = shap.TreeExplainer(model{', X_background' if self.X_background is not None else ''})" # Traduzido
+                            f"Generating self.shap_explainer = shap.TreeExplainer(model{', X_background' if self.X_background is not None else ''})"
                         )
                         self._shap_explainer = shap.TreeExplainer(
                             self.model, self.X_background
@@ -2704,10 +2699,10 @@ class ClassifierExplainer(BaseExplainer):
                 else:
                     if self.model_output == "probability":
                         print(
-                            f"Nota: model_output=='probability', a assumir que a saída SHAP bruta de {model_str} está no espaço de probabilidade..." # Traduzido
+                            f"Note: model_output=='probability', so assuming that raw shap output of {model_str} is in probability space..."
                         )
                     print(
-                        f"A gerar self.shap_explainer = shap.TreeExplainer(model{', X_background' if self.X_background is not None else ''})" # Traduzido
+                        f"Generating self.shap_explainer = shap.TreeExplainer(model{', X_background' if self.X_background is not None else ''})"
                     )
                     self._shap_explainer = shap.TreeExplainer(
                         self.model, self.X_background
@@ -2716,19 +2711,19 @@ class ClassifierExplainer(BaseExplainer):
             elif self.shap == "linear":
                 if self.model_output == "probability":
                     print(
-                        "Nota: model_output='probability' não é atualmente suportado para modelos " # Traduzido
-                        "classificadores lineares com shap. A usar por defeito model_output='logodds' " # Traduzido
-                        "Se realmente precisar de saídas de probabilidade, use shap='kernel'." # Traduzido
+                        "Note: model_output='probability' is currently not supported for linear classifiers "
+                        "models with shap. So defaulting to model_output='logodds' "
+                        "If you really need probability outputs use shap='kernel' instead."
                     )
                     self.model_output = "logodds"
                 if self.X_background is None:
                     print(
-                        "Nota: valores SHAP para shap='linear' são calculados contra " # Traduzido
-                        "X_background, mas o parâmetro X_background=None, a usar X em vez disso..." # Traduzido
+                        "Note: shap values for shap='linear' get calculated against "
+                        "X_background, but paramater X_background=None, so using X instead..."
                     )
                 print(
-                    "A gerar self.shap_explainer = shap.LinearExplainer(model, " # Traduzido
-                    f"{'X_background' if self.X_background is not None else 'X'})..." # Traduzido
+                    "Generating self.shap_explainer = shap.LinearExplainer(model, "
+                    f"{'X_background' if self.X_background is not None else 'X'})..."
                 )
 
                 self._shap_explainer = shap.LinearExplainer(
@@ -2737,13 +2732,13 @@ class ClassifierExplainer(BaseExplainer):
                 )
             elif self.shap == "deep":
                 print(
-                    "A gerar self.shap_explainer = " # Traduzido
-                    "shap.DeepExplainer(model, X_background)" # Traduzido
+                    "Generating self.shap_explainer = "
+                    "shap.DeepExplainer(model, X_background)"
                 )
                 print(
-                    "Aviso: valores SHAP para shap.DeepExplainer são calculados " # Traduzido
-                    "contra X_background, mas o parâmetro " # Traduzido
-                    "X_background=None, a usar shap.sample(X, 5) em vez disso" # Traduzido
+                    "Warning: shap values for shap.DeepExplainer get "
+                    "calculated against X_background, but paramater "
+                    "X_background=None, so using shap.sample(X, 5) instead"
                 )
                 self._shap_explainer = shap.DeepExplainer(
                     self.model,
@@ -2755,13 +2750,13 @@ class ClassifierExplainer(BaseExplainer):
                 import torch
 
                 print(
-                    "A gerar self.shap_explainer = " # Traduzido
-                    "shap.DeepExplainer(model, X_background)" # Traduzido
+                    "Generating self.shap_explainer = "
+                    "shap.DeepExplainer(model, X_background)"
                 )
                 print(
-                    "Aviso: valores SHAP para shap.DeepExplainer são calculados " # Traduzido
-                    "contra X_background, mas o parâmetro " # Traduzido
-                    "X_background=None, a usar shap.sample(X, 5) em vez disso" # Traduzido
+                    "Warning: shap values for shap.DeepExplainer get "
+                    "calculated against X_background, but paramater "
+                    "X_background=None, so using shap.sample(X, 5) instead"
                 )
                 self._shap_explainer = shap.DeepExplainer(
                     self.model.module_,
@@ -2774,19 +2769,19 @@ class ClassifierExplainer(BaseExplainer):
             elif self.shap == "kernel":
                 if self.X_background is None:
                     print(
-                        "Nota: valores SHAP para shap='kernel' normalmente são calculados contra " # Traduzido
-                        "X_background, mas o parâmetro X_background=None, a definir " # Traduzido
-                        "X_background=shap.sample(X, 50)..." # Traduzido
+                        "Note: shap values for shap='kernel' normally get calculated against "
+                        "X_background, but paramater X_background=None, so setting "
+                        "X_background=shap.sample(X, 50)..."
                     )
                 if self.model_output != "probability":
                     print(
-                        "Nota: para ClassifierExplainer shap='kernel' usa por defeito model_output='probability" # Traduzido
+                        "Note: for ClassifierExplainer shap='kernel' defaults to model_output='probability"
                     )
                     self.model_output = "probability"
                 print(
-                    "A gerar self.shap_explainer = shap.KernelExplainer(model, " # Traduzido
-                    f"{'X_background' if self.X_background is not None else 'X'}" # Traduzido
-                    ", link='identity')" # Traduzido
+                    "Generating self.shap_explainer = shap.KernelExplainer(model, "
+                    f"{'X_background' if self.X_background is not None else 'X'}"
+                    ", link='identity')"
                 )
 
                 def model_predict(data_asarray):
@@ -2829,14 +2824,14 @@ class ClassifierExplainer(BaseExplainer):
                         self._shap_base_value,
                     ]
             assert len(self._shap_base_value) == len(self.labels), (
-                f"len(shap_explainer.expected_value)={len(self._shap_base_value)}" # Traduzido
-                + f"e len(labels)={len(self.labels)} não correspondem!" # Traduzido
+                f"len(shap_explainer.expected_value)={len(self._shap_base_value)}"
+                + f"and len(labels)={len(self.labels)} do not match!"
             )
             if self.model_output == "probability":
                 for shap_base_value in self._shap_base_value:
                     assert shap_base_value >= 0.0 and shap_base_value <= 1.0, (
-                        f"O valor base SHAP não parece ser uma probabilidade: {self._shap_base_value}. " # Traduzido
-                        "Tente definir model_output='logodds'." # Traduzido
+                        f"Shap base value does not look like a probability: {self._shap_base_value}. "
+                        "Try setting model_output='logodds'."
                     )
         return self._shap_base_value[pos_label]
 
@@ -2844,7 +2839,7 @@ class ClassifierExplainer(BaseExplainer):
     def get_shap_values_df(self, pos_label=None):
         """SHAP Values"""
         if not hasattr(self, "_shap_values_df"):
-            print("A calcular valores SHAP...", flush=True) # Traduzido
+            print("Calculating shap values...", flush=True)
             if self.shap == "skorch":
                 import torch
 
@@ -2870,9 +2865,9 @@ class ClassifierExplainer(BaseExplainer):
                     and _shap_values.shape[2] > 2
                 ):
                     raise Exception(
-                        f"len(self.label)={len(self.labels)}, mas " # Traduzido
-                        f"shap retornou valores SHAP para {len(_shap_values)} classes! " # Traduzido
-                        "Ajuste o parâmetro labels de acordo!" # Traduzido
+                        f"len(self.label)={len(self.labels)}, but "
+                        f"shap returned shap values for {len(_shap_values)} classes! "
+                        "Adjust the labels parameter accordingly!"
                     )
 
                 if isinstance(_shap_values, list) and len(_shap_values) == 2:
@@ -2880,9 +2875,9 @@ class ClassifierExplainer(BaseExplainer):
                     _shap_values = _shap_values[1]
                 elif isinstance(_shap_values, list) and len(_shap_values) > 2:
                     raise Exception(
-                        f"len(self.label)={len(self.labels)}, mas " # Traduzido
-                        f"shap retornou valores SHAP para {len(_shap_values)} classes! " # Traduzido
-                        "Ajuste o parâmetro labels de acordo!" # Traduzido
+                        f"len(self.label)={len(self.labels)}, but "
+                        f"shap returned shap values for {len(_shap_values)} classes! "
+                        "Adjust the labels parameter accordingly!"
                     )
             else:
                 if (
@@ -2893,20 +2888,20 @@ class ClassifierExplainer(BaseExplainer):
                         _shap_values[:, :, i] for i in range(_shap_values.shape[2])
                     ]
                 assert len(_shap_values) == len(self.labels), (
-                    f"len(self.label)={len(self.labels)}, mas " # Traduzido
-                    f"shap retornou valores SHAP para {len(_shap_values)} classes! " # Traduzido
-                    "Ajuste o parâmetro labels de acordo!" # Traduzido
+                    f"len(self.label)={len(self.labels)}, but "
+                    f"shap returned shap values for {len(_shap_values)} classes! "
+                    "Adjust the labels parameter accordingly!"
                 )
             if self.model_output == "probability":
                 pass
                 # for shap_values in _shap_values:
                 #     assert np.all(shap_values >= -1.0) , \
-                #         (f"model_output=='probability mas alguns valores SHAP são < 1.0!" # Traduzido
-                #          "Tente definir model_output='logodds'.") # Traduzido
+                #         (f"model_output=='probability but some shap values are < 1.0!"
+                #          "Try setting model_output='logodds'.")
                 # for shap_values in _shap_values:
                 #     assert np.all(shap_values <= 1.0) , \
-                #         (f"model_output=='probability mas alguns valores SHAP são > 1.0!" # Traduzido
-                #          "Tente definir model_output='logodds'.") # Traduzido
+                #         (f"model_output=='probability but some shap values are > 1.0!"
+                #          "Try setting model_output='logodds'.")
             if len(self.labels) > 2:
                 self._shap_values_df = [
                     pd.DataFrame(sv, columns=self.columns) for sv in _shap_values
@@ -2935,7 +2930,7 @@ class ClassifierExplainer(BaseExplainer):
             elif pos_label == 0:
                 return self._shap_values_df.multiply(-1)
             else:
-                raise ValueError(f"pos_label={pos_label}, mas deve ser 1 ou 0!") # Traduzido
+                raise ValueError(f"pos_label={pos_label}, but should be either 1 or 0!")
 
     def set_shap_values(self, base_value: List[float], shap_values: List):
         """Set shap values manually. This is useful if you already have
@@ -2964,33 +2959,33 @@ class ClassifierExplainer(BaseExplainer):
             base_value = list(base_value)
         if not isinstance(base_value, list):
             raise ValueError(
-                "base_value deve ser uma lista de floats com um valor esperado para cada classe" # Traduzido
+                "base_value should be a list of floats with an expected value for each class"
             )
         if not len(base_value) == len(self.labels):
             raise ValueError(
-                "base value deve ser uma lista com um valor esperado " # Traduzido
-                f"para cada classe, portanto deve ter comprimento {len(self.labels)}" # Traduzido
+                "base value should be a list with an expected value "
+                f"for each class, so should be length {len(self.labels)}"
             )
         self._shap_base_value = base_value
 
         self._shap_values_df = []
         if not isinstance(shap_values, list):
             raise ValueError(
-                "shap_values deve ser uma lista de np.ndarray com valores SHAP para cada classe" # Traduzido
+                "shap_values should be a list of np.ndarray with shap values for each class"
             )
         if len(shap_values) != len(self.labels):
             raise ValueError(
-                "shap_values deve ser uma lista com um np.ndarray de valores SHAP " # Traduzido
-                f"para cada classe, portanto deve ter comprimento {len(self.labels)}" # Traduzido
+                "shap_values be a list with a np.ndarray of shap values "
+                f"for each class, so should be length {len(self.labels)}"
             )
         for sv in shap_values:
             if not isinstance(sv, np.ndarray):
-                raise ValueError("cada elemento de shap_values deve ser um np.ndarray!") # Traduzido
+                raise ValueError("each element of shap_values should be an np.ndarray!")
             if sv.shape[0] != len(self.X):
-                raise ValueError(f"Esperados valores SHAP com {len(self.X)} linhas!") # Traduzido
+                raise ValueError(f"Expected shap values to have {len(self.X)} rows!")
             if sv.shape[1] != len(self.original_cols):
                 raise ValueError(
-                    f"Esperados valores SHAP com {len(self.original_cols)} colunas!" # Traduzido (original_columns -> original_cols)
+                    f"Expected shap values to have {len(self.original_columns)} columns!"
                 )
             self._shap_values_df.append(
                 merge_categorical_shap_values(
@@ -3031,11 +3026,11 @@ class ClassifierExplainer(BaseExplainer):
                     shap_row = pd.DataFrame(-sv, columns=self.columns)
                 else:
                     raise ValueError(
-                        "classificador binário só aceita pos_label em {0, 1}!" # Traduzido
+                        "binary classifier only except pos_label in {0, 1}!"
                     )
             else:
                 raise ValueError(
-                    "Valores SHAP retornados não são nem lista nem array 2d para a classe positiva!" # Traduzido
+                    "Shap values returned are neither a list nor 2d array for positive class!"
                 )
             shap_row = merge_categorical_shap_values(
                 shap_row, self.onehot_dict, self.merged_cols
@@ -3056,7 +3051,7 @@ class ClassifierExplainer(BaseExplainer):
         elif X_row is not None:
             return X_row_to_shap_row(X_row)
         else:
-            raise ValueError("Deve passar index ou X_row!") # Traduzido
+            raise ValueError("you should either pas index or X_row!")
         return shap_row
 
     @insert_pos_label
@@ -3065,15 +3060,15 @@ class ClassifierExplainer(BaseExplainer):
         if not hasattr(self, "_shap_interaction_values"):
             _ = self.get_shap_values_df()  # make sure shap values have been calculated
             print(
-                "A calcular valores de interação SHAP... (isto pode demorar um pouco)", # Traduzido
+                "Calculating shap interaction values... (this may take a while)",
                 flush=True,
             )
             if self.shap == "tree":
                 print(
-                    "Lembrete: A complexidade computacional do TreeShap é O(TLD^2), " # Traduzido
-                    "onde T é o número de árvores, L é o número máximo de" # Traduzido
-                    " folhas em qualquer árvore e D a profundidade máxima de qualquer árvore. Assim, " # Traduzido
-                    "reduzir estes valores acelerará o cálculo.", # Traduzido
+                    "Reminder: TreeShap computational complexity is O(TLD^2), "
+                    "where T is the number of trees, L is the maximum number of"
+                    " leaves in any tree and D the maximal depth of any tree. So "
+                    "reducing these will speed up the calculation.",
                     flush=True,
                 )
             self._shap_interaction_values = self.shap_explainer.shap_interaction_values(
@@ -3103,10 +3098,10 @@ class ClassifierExplainer(BaseExplainer):
                     self._shap_interaction_values = [self._shap_interaction_values[1]]
                 else:
                     raise Exception(
-                        f"len(self.label)={len(self.labels)}, mas " # Traduzido
-                        f"shap retornou valores de interação SHAP para " # Traduzido
-                        f"{len(self._shap_interaction_values)} classes! " # Traduzido
-                        "Ajuste o parâmetro labels de acordo!" # Traduzido
+                        f"len(self.label)={len(self.labels)}, but "
+                        f"shap returned shap interaction values for "
+                        f"{len(self._shap_interaction_values)} classes! "
+                        "Adjust the labels parameter accordingly!"
                     )
             else:
                 if (
@@ -3119,9 +3114,9 @@ class ClassifierExplainer(BaseExplainer):
                         for i in range(self._shap_interaction_values.shape[3])
                     ]
                 assert len(self._shap_interaction_values) == len(self.labels), (
-                    f"len(self.label)={len(self.labels)}, mas " # Traduzido
-                    f"shap retornou valores SHAP para {len(self._shap_interaction_values)} classes! " # Traduzido
-                    "Ajuste o parâmetro labels de acordo!" # Traduzido
+                    f"len(self.label)={len(self.labels)}, but "
+                    f"shap returned shap values for {len(self._shap_interaction_values)} classes! "
+                    "Adjust the labels parameter accordingly!"
                 )
 
             self._shap_interaction_values = [
@@ -3144,7 +3139,7 @@ class ClassifierExplainer(BaseExplainer):
             elif pos_label == 0:
                 return self._shap_interaction_values * -1
             else:
-                raise ValueError(f"pos_label={pos_label}, mas deve ser 1 ou 0!") # Traduzido
+                raise ValueError(f"pos_label={pos_label}, but should be either 1 or 0!")
 
     def set_shap_interaction_values(self, shap_interaction_values: List[np.ndarray]):
         """Manually set shap interaction values in case you have already pre-computed
@@ -3158,24 +3153,24 @@ class ClassifierExplainer(BaseExplainer):
         self._shap_interaction_values = []
         if not isinstance(shap_interaction_values, list):
             raise ValueError(
-                "shap_interaction_values deve ser uma lista de np.ndarray com valores de interação SHAP para cada classe" # Traduzido
+                "shap_interaction_values should be a list of np.ndarray with shap interaction values for each class"
             )
         if len(shap_interaction_values) != len(self.labels):
             raise ValueError(
-                "shap_interaction_values deve ser uma lista com um np.ndarray de valores de interação SHAP " # Traduzido
-                f"para cada classe, portanto deve ter comprimento {len(self.labels)}" # Traduzido
+                "shap_interaction_values should be a list with a np.ndarray of shap interaction values "
+                f"for each class, so should be length {len(self.labels)}"
             )
         for siv in shap_interaction_values:
             if not isinstance(siv, np.ndarray):
-                raise ValueError("cada elemento de shap_values deve ser um np.ndarray!") # Traduzido
+                raise ValueError("each element of shap_values should be an np.ndarray!")
             if siv.shape != (
                 len(self.X),
                 len(self.original_cols),
                 len(self.original_cols),
             ):
                 raise ValueError(
-                    f"Esperados valores de interação SHAP com a forma " # Traduzido
-                    f"({len(self.X)}, {len(self.original_cols)}, {len(self.original_cols)})" # Traduzido
+                    f"Expected shap interaction values to have shape of "
+                    f"({len(self.X)}, {len(self.original_cols)}, {len(self.original_cols)})"
                 )
             self._shap_interaction_values.append(
                 merge_categorical_shap_interaction_values(
@@ -3208,9 +3203,9 @@ class ClassifierExplainer(BaseExplainer):
         """drops the shap values and shap_interaction values for all labels
         except pos_label in order to save on memory usage for multi class classifiers"""
         assert len(self.labels) > 2, (
-            "Não é necessário descartar valores SHAP para classificadores binários! " # Traduzido
-            "ClassifierExplainer armazena apenas uma etiqueta de qualquer maneira e retorna " # Traduzido
-            "valores SHAP negativos para a classe negativa..." # Traduzido
+            "It is not necessary to drop shap values for binary classifiers! "
+            "ClassifierExplainer only store a single label anyway and return "
+            "negative shap_values for the negative class..."
         )
         if hasattr(self, "_shap_values_df"):
             self._shap_values_df = self.get_shap_values_df(pos_label)
@@ -3281,7 +3276,7 @@ class ClassifierExplainer(BaseExplainer):
         """
         if self.y_missing:
             raise ValueError(
-                "Nenhum y foi passado para o explainer, não é possível calcular métricas!" # Traduzido
+                "No y was passed to explainer, so cannot calculate metrics!"
             )
 
         def get_metrics(cutoff, pos_label):
@@ -3289,15 +3284,15 @@ class ClassifierExplainer(BaseExplainer):
             y_pred = np.where(self.pred_probas(pos_label) > cutoff, 1, 0)
 
             metrics_dict = {
-                "acurácia": accuracy_score(y_true, y_pred), # Traduzido
-                "precisão": precision_score(y_true, y_pred, zero_division=0), # Traduzido
-                "revocação": recall_score(y_true, y_pred), # Traduzido
-                "f1": f1_score(y_true, y_pred), # Mantido (padrão)
-                "roc_auc_score": roc_auc_score(y_true, self.pred_probas(pos_label)), # Mantido (padrão)
-                "pr_auc_score": average_precision_score( # Mantido (padrão)
+                "accuracy": accuracy_score(y_true, y_pred),
+                "precision": precision_score(y_true, y_pred, zero_division=0),
+                "recall": recall_score(y_true, y_pred),
+                "f1": f1_score(y_true, y_pred),
+                "roc_auc_score": roc_auc_score(y_true, self.pred_probas(pos_label)),
+                "pr_auc_score": average_precision_score(
                     y_true, self.pred_probas(pos_label)
                 ),
-                "log_loss": log_loss(y_true, self.pred_probas(pos_label)), # Mantido (padrão)
+                "log_loss": log_loss(y_true, self.pred_probas(pos_label)),
             }
             return metrics_dict
 
@@ -3307,9 +3302,9 @@ class ClassifierExplainer(BaseExplainer):
                 cv_metrics[label] = dict()
                 for cut in np.linspace(1, 99, 99, dtype=int):
                     cv_metrics[label][cut] = {
-                        "acurácia": [],
-                        "precisão": [],
-                        "revocação": [],
+                        "accuracy": [],
+                        "precision": [],
+                        "recall": [],
                         "f1": [],
                         "roc_auc_score": [],
                         "pr_auc_score": [],
@@ -3325,13 +3320,13 @@ class ClassifierExplainer(BaseExplainer):
                     for cut in np.linspace(1, 99, 99, dtype=int):
                         y_true = np.where(y_test == label, 1, 0)
                         y_pred = np.where(preds[:, label] > 0.01 * cut, 1, 0)
-                        cv_metrics[label][cut]["acurácia"].append(
+                        cv_metrics[label][cut]["accuracy"].append(
                             accuracy_score(y_true, y_pred)
                         )
-                        cv_metrics[label][cut]["precisão"].append(
+                        cv_metrics[label][cut]["precision"].append(
                             precision_score(y_true, y_pred, zero_division=0)
                         )
-                        cv_metrics[label][cut]["revocação"].append(
+                        cv_metrics[label][cut]["recall"].append(
                             recall_score(y_true, y_pred)
                         )
                         cv_metrics[label][cut]["f1"].append(f1_score(y_true, y_pred))
@@ -3353,7 +3348,7 @@ class ClassifierExplainer(BaseExplainer):
 
         if not hasattr(self, "_metrics"):
             _ = self.pred_probas()
-            print("A calcular métricas...", flush=True) # Traduzido
+            print("Calculating metrics...", flush=True)
             if self.cv is None:
                 self._metrics = dict()
                 for label in range(len(self.labels)):
@@ -3376,7 +3371,7 @@ class ClassifierExplainer(BaseExplainer):
             if callable(m):
                 if self.cv is not None:
                     raise ValueError(
-                        "métricas personalizadas não funcionam com permutation_cv por enquanto!" # Traduzido
+                        "custom metrics do not work with permutation_cv for now!"
                     )
                 metric_args = inspect.signature(m).parameters.keys()
                 metric_kwargs = {}
@@ -3396,19 +3391,12 @@ class ClassifierExplainer(BaseExplainer):
                     show_metrics_dict[m.__name__] = m(y_true, y_pred, **metric_kwargs)
                 except:
                     raise Exception(
-                        f"Falha ao calcular a métrica {m.__name__}! " # Traduzido
-                        "Certifique-se de que aceita os argumentos y_true e y_pred, e " # Traduzido
-                        "opcionalmente cutoff e pos_label!" # Traduzido
+                        f"Failed to calculate metric {m.__name__}! "
+                        "Make sure it takes arguments y_true and y_pred, and "
+                        "optionally cutoff and pos_label!"
                     )
             elif m in metrics_dict:
                 show_metrics_dict[m] = metrics_dict[m]
-            elif m == "accuracy": # Chave em inglês para métrica em português
-                show_metrics_dict[m] = metrics_dict["acurácia"]
-            elif m == "precision": # Chave em inglês para métrica em português
-                show_metrics_dict[m] = metrics_dict["precisão"]
-            elif m == "recall": # Chave em inglês para métrica em português
-                show_metrics_dict[m] = metrics_dict["revocação"]
-
         return show_metrics_dict
 
     @insert_pos_label
@@ -3426,38 +3414,35 @@ class ClassifierExplainer(BaseExplainer):
         """
         metrics_dict = self.metrics(cutoff=cutoff, pos_label=pos_label)
         metrics_descriptions_dict = {}
-        # Usa as chaves traduzidas para obter os valores
-        for k_en, k_pt in [('accuracy','acurácia'), ('precision','precisão'), ('recall','revocação'), ('f1','f1'), ('roc_auc_score','roc_auc_score'), ('pr_auc_score','pr_auc_score'), ('log_loss','log_loss')]:
-            if k_pt in metrics_dict:
-                v = metrics_dict[k_pt]
-                if k_en == "accuracy":
-                    metrics_descriptions_dict[
-                        k_en # Usa chave em inglês para compatibilidade externa
-                    ] = f"{100*v:.{round}f}% das etiquetas previstas foram previstas corretamente."
-                if k_en == "precision":
-                    metrics_descriptions_dict[
-                        k_en
-                    ] = f"{100*v:.{round}f}% das etiquetas positivas previstas foram previstas corretamente."
-                if k_en == "recall":
-                    metrics_descriptions_dict[
-                        k_en
-                    ] = f"{100*v:.{round}f}% das etiquetas positivas foram previstas corretamente."
-                if k_en == "f1":
-                    metrics_descriptions_dict[
-                        k_en
-                    ] = f"A média ponderada de precisão e revocação é {v:.{round}f}"
-                if k_en == "roc_auc_score":
-                    metrics_descriptions_dict[
-                        k_en
-                    ] = f"A probabilidade de uma etiqueta positiva aleatória ter uma pontuação maior que uma etiqueta negativa aleatória é {100*v:.2f}%"
-                if k_en == "pr_auc_score":
-                    metrics_descriptions_dict[
-                        k_en
-                    ] = f"A pontuação média de precisão calculada para cada limiar de revocação é {v:.{round}f}. Isto ignora os verdadeiros negativos."
-                if k_en == "log_loss":
-                    metrics_descriptions_dict[
-                        k_en
-                    ] = f"Uma medida de quão longe a etiqueta prevista está da etiqueta verdadeira, em média, no espaço logarítmico: {v:.{round}f}"
+        for k, v in metrics_dict.items():
+            if k == "accuracy":
+                metrics_descriptions_dict[
+                    k
+                ] = f"{100*v:.{round}f}% of predicted labels was predicted correctly."
+            if k == "precision":
+                metrics_descriptions_dict[
+                    k
+                ] = f"{100*v:.{round}f}% of predicted positive labels was predicted correctly."
+            if k == "recall":
+                metrics_descriptions_dict[
+                    k
+                ] = f"{100*v:.{round}f}% of positive labels was predicted correctly."
+            if k == "f1":
+                metrics_descriptions_dict[
+                    k
+                ] = f"The weighted average of precision and recall is {v:.{round}f}"
+            if k == "roc_auc_score":
+                metrics_descriptions_dict[
+                    k
+                ] = f"The probability that a random positive label has a higher score than a random negative label is {100*v:.2f}%"
+            if k == "pr_auc_score":
+                metrics_descriptions_dict[
+                    k
+                ] = f"The average precision score calculated for each recall threshold is {v:.{round}f}. This ignores true negatives."
+            if k == "log_loss":
+                metrics_descriptions_dict[
+                    k
+                ] = f"A measure of how far the predicted label is from the true label on average in log space {v:.{round}f}"
         return metrics_descriptions_dict
 
     @insert_pos_label
@@ -3555,7 +3540,7 @@ class ClassifierExplainer(BaseExplainer):
             pd.DataFrame
         """
         if index is None and X_row is None:
-            raise ValueError("Precisa de passar index ou X_row!") # Traduzido
+            raise ValueError("You need to either pass an index or X_row!")
         if index is not None:
             X_row = self.get_X_row(index)
         if X_row is not None:
@@ -3565,18 +3550,17 @@ class ClassifierExplainer(BaseExplainer):
                 X_row = X_row.values.astype("float32")
             pred_probas = self.model.predict_proba(X_row)[0, :].squeeze()
 
-        preds_df = pd.DataFrame(dict(etiqueta=self.labels, probabilidade=pred_probas)) # Traduzido nomes colunas
-        if logodds and all(preds_df.probabilidade < 1 - np.finfo(np.float64).eps):
-            preds_df.loc[:, "logodds"] = preds_df.probabilidade.apply(
+        preds_df = pd.DataFrame(dict(label=self.labels, probability=pred_probas))
+        if logodds and all(preds_df.probability < 1 - np.finfo(np.float64).eps):
+            preds_df.loc[:, "logodds"] = preds_df.probability.apply(
                 lambda p: np.log(p / (1 - p))
             )
-        if index is not None and add_star:
+        if index is not None:
             try:
-                y_true_idx = self.pos_label_index(self.get_y(index))
-                preds_df.iloc[y_true_idx, 0] = f"{preds_df.iloc[y_true_idx, 0]}*"
+                y_true = self.pos_label_index(self.get_y(index))
+                preds_df.iloc[y_true, 0] = f"{preds_df.iloc[y_true, 0]}*"
             except Exception as e:
-                # print(e) # Comentado para não poluir output
-                pass
+                print(e)
 
         return preds_df.round(round)
 
@@ -3599,7 +3583,7 @@ class ClassifierExplainer(BaseExplainer):
         """
         if self.y_missing:
             raise ValueError(
-                "Nenhum y foi passado para o explainer, não é possível calcular precision_df!" # Traduzido
+                "No y was passed to explainer, so cannot calculate precision_df!"
             )
         assert self.pred_probas is not None
 
@@ -3634,7 +3618,7 @@ class ClassifierExplainer(BaseExplainer):
 
         """
         if not hasattr(self, "_liftcurve_dfs"):
-            print("A calcular liftcurve_dfs...", flush=True) # Traduzido
+            print("Calculating liftcurve_dfs...", flush=True)
             self._liftcurve_dfs = [
                 get_liftcurve_df(self.pred_probas(label), self.y, label)
                 for label in range(len(self.labels))
@@ -3657,10 +3641,10 @@ class ClassifierExplainer(BaseExplainer):
 
         def get_clas_df(cutoff, pos_label):
             clas_df = pd.DataFrame(index=pd.RangeIndex(0, len(self.labels)))
-            clas_df["abaixo"] = self.y[ # Traduzido
+            clas_df["below"] = self.y[
                 self.pred_probas(pos_label) < cutoff
             ].value_counts()
-            clas_df["acima"] = self.y[ # Traduzido
+            clas_df["above"] = self.y[
                 self.pred_probas(pos_label) >= cutoff
             ].value_counts()
             clas_df = clas_df.fillna(0)
@@ -3670,7 +3654,7 @@ class ClassifierExplainer(BaseExplainer):
 
         if not hasattr(self, "_classification_dfs"):
             _ = self.pred_probas()
-            print("A calcular classification_dfs...", flush=True) # Traduzido
+            print("Calculating classification_dfs...", flush=True)
             self._classification_dfs = dict()
             for label in range(len(self.labels)):
                 self._classification_dfs[label] = dict()
@@ -3689,7 +3673,7 @@ class ClassifierExplainer(BaseExplainer):
         fpr, tpr, thresholds, score"""
 
         if not hasattr(self, "_roc_auc_curves"):
-            print("A calcular curvas ROC AUC...", flush=True) # Traduzido
+            print("Calculating roc auc curves...", flush=True)
             self._roc_auc_curves = []
             for i in range(len(self.labels)):
                 fpr, tpr, thresholds = roc_curve(self.y_binary(i), self.pred_probas(i))
@@ -3705,7 +3689,7 @@ class ClassifierExplainer(BaseExplainer):
         fpr, tpr, thresholds, score"""
 
         if not hasattr(self, "_pr_auc_curves"):
-            print("A calcular curvas PR AUC...", flush=True) # Traduzido
+            print("Calculating pr auc curves...", flush=True)
             self._pr_auc_curves = []
             for i in range(len(self.labels)):
                 precision, recall, thresholds = precision_recall_curve(
@@ -3731,7 +3715,7 @@ class ClassifierExplainer(BaseExplainer):
             )
 
         if not hasattr(self, "_confusion_matrices"):
-            print("A calcular matrizes de confusão...", flush=True) # Traduzido
+            print("Calculating confusion matrices...", flush=True)
             self._confusion_matrices = dict()
             self._confusion_matrices["binary"] = dict()
             for label in range(len(self.labels)):
@@ -3843,7 +3827,7 @@ class ClassifierExplainer(BaseExplainer):
         """
         if self.y_missing:
             raise ValueError(
-                "Nenhum y foi passado para o explainer, não é possível desenhar a matriz de confusão!" # Traduzido
+                "No y was passed to explainer, so cannot plot confusion matrix!"
             )
         pos_label_str = self.labels[pos_label]
         if binary:
@@ -3855,7 +3839,7 @@ class ClassifierExplainer(BaseExplainer):
 
                 labels = order_binary_labels(self.labels, pos_label_str)
             else:
-                labels = ["Não " + pos_label_str, pos_label_str] # Traduzido
+                labels = ["Not " + pos_label_str, pos_label_str]
 
             return plotly_confusion_matrix(
                 self.confusion_matrix(cutoff, binary, pos_label),
@@ -3933,7 +3917,7 @@ class ClassifierExplainer(BaseExplainer):
 
         """
         if self.y_missing:
-            raise ValueError("Nenhum y foi passado para o explainer, não é possível desenhar ROC AUC!") # Traduzido
+            raise ValueError("No y was passed to explainer, so cannot plot roc auc!")
         roc_dict = self.roc_auc_curve(pos_label)
         return plotly_roc_auc_curve(
             roc_dict["fpr"],
@@ -3957,7 +3941,7 @@ class ClassifierExplainer(BaseExplainer):
 
         """
         if self.y_missing:
-            raise ValueError("Nenhum y foi passado para o explainer, não é possível desenhar PR AUC!") # Traduzido
+            raise ValueError("No y was passed to explainer, so cannot plot PR AUC!")
         pr_dict = self.pr_auc_curve(pos_label)
         return plotly_pr_auc_curve(
             pr_dict["precision"],
@@ -4106,11 +4090,11 @@ class RegressionExplainer(BaseExplainer):
 
         if safe_isinstance(model, "RandomForestRegressor", "ExtraTreesRegressor"):
             print(
-                "A alterar tipo de classe para RandomForestRegressionExplainer...", flush=True # Traduzido
+                "Changing class type to RandomForestRegressionExplainer...", flush=True
             )
             self.__class__ = RandomForestRegressionExplainer
         if safe_isinstance(model, "XGBRegressor"):
-            print("A alterar tipo de classe para XGBRegressionExplainer...", flush=True) # Traduzido
+            print("Changing class type to XGBRegressionExplainer...", flush=True)
             self.__class__ = XGBRegressionExplainer
 
         _ = self.shap_explainer
@@ -4119,7 +4103,7 @@ class RegressionExplainer(BaseExplainer):
     def residuals(self):
         """residuals: y-preds"""
         if not hasattr(self, "_residuals"):
-            print("A calcular resíduos...") # Traduzido
+            print("Calculating residuals...")
             self._residuals = (self.y - self.preds).astype(self.precision)
         return self._residuals
 
@@ -4127,7 +4111,7 @@ class RegressionExplainer(BaseExplainer):
     def abs_residuals(self):
         """absolute residuals"""
         if not hasattr(self, "_abs_residuals"):
-            print("A calcular resíduos absolutos...") # Traduzido
+            print("Calculating absolute residuals...")
             self._abs_residuals = np.abs(self.residuals).astype(self.precision)
         return self._abs_residuals
 
@@ -4219,7 +4203,7 @@ class RegressionExplainer(BaseExplainer):
 
         """
         if index is None and X_row is None:
-            raise ValueError("Precisa de passar index ou X_row!") # Traduzido
+            raise ValueError("You need to either pass an index or X_row!")
         if index is not None:
             X_row = self.get_X_row(index)
         if X_row is not None:
@@ -4230,19 +4214,19 @@ class RegressionExplainer(BaseExplainer):
         pred = self.model.predict(X_row).item()
         preds_df = pd.DataFrame(columns=["", self.target])
         preds_df = append_dict_to_df(
-            preds_df, {"": "Previsto", self.target: f"{pred:.{round}f} {self.units}"} # Traduzido
+            preds_df, {"": "Predicted", self.target: f"{pred:.{round}f} {self.units}"}
         )
         if index is not None:
             try:
                 y_true = self.get_y(index)
                 preds_df = append_dict_to_df(
                     preds_df,
-                    {"": "Observado", self.target: f"{y_true:.{round}f} {self.units}"}, # Traduzido
+                    {"": "Observed", self.target: f"{y_true:.{round}f} {self.units}"},
                 )
                 preds_df = append_dict_to_df(
                     preds_df,
                     {
-                        "": "Resíduo", # Traduzido
+                        "": "Residual",
                         self.target: f"{(y_true-pred):.{round}f} {self.units}",
                     },
                 )
@@ -4260,25 +4244,25 @@ class RegressionExplainer(BaseExplainer):
 
         if self.y_missing:
             raise ValueError(
-                "Nenhum y foi passado para o explainer, não é possível calcular métricas!" # Traduzido
+                "No y was passed to explainer, so cannot calculate metrics!"
             )
         if self.cv is None:
             metrics_dict = {
-                "erro-quadratico-medio": mean_squared_error(self.y, self.preds), # Traduzido
-                "raiz-erro-quadratico-medio": np.sqrt( # Traduzido
+                "mean-squared-error": mean_squared_error(self.y, self.preds),
+                "root-mean-squared-error": np.sqrt(
                     mean_squared_error(self.y, self.preds)
                 ),
-                "erro-absoluto-medio": mean_absolute_error(self.y, self.preds), # Traduzido
-                "erro-percentual-absoluto-medio": mape_score(self.y, self.preds), # Traduzido
-                "R-quadrado": r2_score(self.y, self.preds), # Traduzido
+                "mean-absolute-error": mean_absolute_error(self.y, self.preds),
+                "mean-absolute-percentage-error": mape_score(self.y, self.preds),
+                "R-squared": r2_score(self.y, self.preds),
             }
         else:
             metrics_dict = {
-                "erro-quadratico-medio": [],
-                "raiz-erro-quadratico-medio": [],
-                "erro-absoluto-medio": [],
-                "erro-percentual-absoluto-medio": [],
-                "R-quadrado": [],
+                "mean-squared-error": [],
+                "root-mean-squared-error": [],
+                "mean-absolute-error": [],
+                "mean-absolute-percentage-error": [],
+                "R-squared": [],
             }
             for train_index, test_index in KFold(n_splits=self.cv, shuffle=True).split(
                 self.X
@@ -4286,26 +4270,26 @@ class RegressionExplainer(BaseExplainer):
                 X_train, X_test = self.X.iloc[train_index], self.X.iloc[test_index]
                 y_train, y_test = self.y.iloc[train_index], self.y.iloc[test_index]
                 preds = clone(self.model).fit(X_train, y_train).predict(X_test)
-                metrics_dict["erro-quadratico-medio"].append(
+                metrics_dict["mean-squared-error"].append(
                     mean_squared_error(y_test, preds)
                 )
-                metrics_dict["raiz-erro-quadratico-medio"].append(
+                metrics_dict["root-mean-squared-error"].append(
                     np.sqrt(mean_squared_error(y_test, preds))
                 )
-                metrics_dict["erro-absoluto-medio"].append(
+                metrics_dict["mean-absolute-error"].append(
                     mean_absolute_error(y_test, preds)
                 )
-                metrics_dict["erro-percentual-absoluto-medio"].append(
+                metrics_dict["mean-absolute-percentage-error"].append(
                     mape_score(y_test, preds)
                 )
-                metrics_dict["R-quadrado"].append(r2_score(y_test, preds))
+                metrics_dict["R-squared"].append(r2_score(y_test, preds))
             metrics_dict = {k: np.mean(v) for k, v in metrics_dict.items()}
 
-        if metrics_dict["erro-percentual-absoluto-medio"] > 2:
+        if metrics_dict["mean-absolute-percentage-error"] > 2:
             print(
-                "Aviso: erro-percentual-absoluto-medio é muito grande " # Traduzido
-                f"({metrics_dict['erro-percentual-absoluto-medio']}), pode escondê-lo " # Traduzido
-                "das métricas passando o parâmetro show_metrics...", # Traduzido
+                "Warning: mean-absolute-percentage-error is very large "
+                f"({metrics_dict['mean-absolute-percentage-error']}), you can hide "
+                "it from the metrics by passing parameter show_metrics...",
                 flush=True,
             )
         if not show_metrics:
@@ -4315,22 +4299,11 @@ class RegressionExplainer(BaseExplainer):
             if callable(m):
                 if self.cv is not None:
                     raise ValueError(
-                        "métricas personalizadas não funcionam com permutation_cv por enquanto!" # Traduzido
+                        "custom metrics do not work with permutation_cv for now!"
                     )
                 show_metrics_dict[m.__name__] = m(self.y, self.preds)
-            elif m in metrics_dict: # Usa a chave em inglês para procurar na métrica traduzida
-                 show_metrics_dict[m] = metrics_dict[m]
-            elif m == "mean-squared-error":
-                 show_metrics_dict[m] = metrics_dict["erro-quadratico-medio"]
-            elif m == "root-mean-squared-error":
-                 show_metrics_dict[m] = metrics_dict["raiz-erro-quadratico-medio"]
-            elif m == "mean-absolute-error":
-                 show_metrics_dict[m] = metrics_dict["erro-absoluto-medio"]
-            elif m == "mean-absolute-percentage-error":
-                 show_metrics_dict[m] = metrics_dict["erro-percentual-absoluto-medio"]
-            elif m == "R-squared":
-                 show_metrics_dict[m] = metrics_dict["R-quadrado"]
-
+            elif m in metrics_dict:
+                show_metrics_dict[m] = metrics_dict[m]
         return show_metrics_dict
 
     def metrics_descriptions(self, round=2):
@@ -4342,41 +4315,38 @@ class RegressionExplainer(BaseExplainer):
         """
         metrics_dict = self.metrics()
         metrics_descriptions_dict = {}
-        # Usa as chaves traduzidas para obter os valores
-        for k_en, k_pt in [('mean-squared-error','erro-quadratico-medio'),
-                           ('root-mean-squared-error','raiz-erro-quadratico-medio'),
-                           ('mean-absolute-error','erro-absoluto-medio'),
-                           ('mean-absolute-percentage-error','erro-percentual-absoluto-medio'),
-                           ('R-squared','R-quadrado')]:
-            if k_pt in metrics_dict:
-                v = metrics_dict[k_pt]
-                if k_en == "mean-squared-error":
-                    metrics_descriptions_dict[k_en] = ( # Usa chave em inglês para compatibilidade externa
-                        "Uma medida de quão próximo o valor previsto se ajusta aos valores verdadeiros, onde grandes desvios "
-                        "são penalizados mais fortemente. Quanto menor este número, melhor o modelo."
-                    )
-                if k_en == "root-mean-squared-error":
-                    metrics_descriptions_dict[k_en] = (
-                        "Uma medida de quão próximo o valor previsto se ajusta aos valores verdadeiros, onde grandes desvios "
-                        "são penalizados mais fortemente. Quanto menor este número, melhor o modelo (na mesma unidade que o alvo)."
-                    )
-                if k_en == "mean-absolute-error":
-                    metrics_descriptions_dict[k_en] = (
-                        f"Em média, as previsões desviam-se "
-                        f"{v:.{round}f} {self.units} do valor observado de "
-                        f"{self.target} (pode ser acima ou abaixo)"
-                    )
-                if k_en == "mean-absolute-percentage-error":
-                    metrics_descriptions_dict[k_en] = (
-                        f"Em média, as previsões desviam-se "
-                        f"{100*v:.{round}f}% do valor observado de "
-                        f"{self.target} (pode ser acima ou abaixo)"
-                    )
-                if k_en == "R-squared":
-                    metrics_descriptions_dict[k_en] = (
-                        f"{100*v:.{round}f}% de toda a "
-                        f"variação em {self.target} foi explicada pelo modelo."
-                    )
+        for k, v in metrics_dict.items():
+            if k == "mean-squared-error":
+                metrics_descriptions_dict[k] = (
+                    "A measure of how close "
+                    "predicted value fits true values, where large deviations "
+                    "are punished more heavily. So the lower this number the "
+                    "better the model."
+                )
+            if k == "root-mean-squared-error":
+                metrics_descriptions_dict[k] = (
+                    "A measure of how close "
+                    "predicted value fits true values, where large deviations "
+                    "are punished more heavily. So the lower this number the "
+                    "better the model."
+                )
+            if k == "mean-absolute-error":
+                metrics_descriptions_dict[k] = (
+                    f"On average predictions deviate "
+                    f"{v:.{round}f} {self.units} off the observed value of "
+                    f"{self.target} (can be both above or below)"
+                )
+            if k == "mean-absolute-percentage-error":
+                metrics_descriptions_dict[k] = (
+                    f"On average predictions deviate "
+                    f"{100*v:.{round}f}% off the observed value of "
+                    f"{self.target} (can be both above or below)"
+                )
+            if k == "R-squared":
+                metrics_descriptions_dict[k] = (
+                    f"{100*v:.{round}f}% of all "
+                    f"variation in {self.target} was explained by the model."
+                )
         return metrics_descriptions_dict
 
     def plot_predicted_vs_actual(
@@ -4400,7 +4370,7 @@ class RegressionExplainer(BaseExplainer):
         plot_idxs = self.get_idx_sample(plot_sample)
         if self.y_missing:
             raise ValueError(
-                "Nenhum y foi passado para o explainer, não é possível desenhar previsto vs real!" # Traduzido
+                "No y was passed to explainer, so cannot plot predicted vs actual!"
             )
         return plotly_predicted_vs_actual(
             self.y[plot_idxs],
@@ -4434,7 +4404,7 @@ class RegressionExplainer(BaseExplainer):
 
         """
         if self.y_missing:
-            raise ValueError("Nenhum y foi passado para o explainer, não é possível desenhar resíduos!") # Traduzido
+            raise ValueError("No y was passed to explainer, so cannot plot residuals!")
 
         plot_idxs = self.get_idx_sample(plot_sample)
         return plotly_plot_residuals(
@@ -4480,8 +4450,8 @@ class RegressionExplainer(BaseExplainer):
           plotly fig
         """
         if self.y_missing:
-            raise ValueError("Nenhum y foi passado para o explainer, não é possível desenhar resíduos!") # Traduzido
-        assert col in self.merged_cols, f"{col} não está em explainer.merged_cols!" # Traduzido
+            raise ValueError("No y was passed to explainer, so cannot plot residuals!")
+        assert col in self.merged_cols, f"{col} not in explainer.merged_cols!"
 
         plot_idxs = self.get_idx_sample(plot_sample)
         col_vals = self.get_col(col).iloc[plot_idxs]
@@ -4544,9 +4514,9 @@ class RegressionExplainer(BaseExplainer):
         """
         if self.y_missing:
             raise ValueError(
-                "Nenhum y foi passado para o explainer, não é possível desenhar y vs característica!" # Traduzido
+                "No y was passed to explainer, so cannot plot y vs feature!"
             )
-        assert col in self.merged_cols, f"{col} não está em explainer.merged_cols!" # Traduzido
+        assert col in self.merged_cols, f"{col} not in explainer.merged_cols!"
 
         plot_idxs = self.get_idx_sample(plot_sample)
         col_vals = self.get_col(col).iloc[plot_idxs]
@@ -4609,7 +4579,7 @@ class RegressionExplainer(BaseExplainer):
         Returns:
           plotly fig
         """
-        assert col in self.merged_cols, f"{col} não está em explainer.merged_cols!" # Traduzido
+        assert col in self.merged_cols, f"{col} not in explainer.merged_cols!"
 
         plot_idxs = self.get_idx_sample(plot_sample)
         col_vals = self.get_col(col).iloc[plot_idxs]
@@ -4668,12 +4638,12 @@ class TreeExplainer(BaseExplainer):
             except Exception:
                 print(
                     """
-                AVISO: parece não ter o graphviz no seu path (não é possível executar 'dot -V'), 
-                portanto, nenhuma visualização dtreeviz de árvores de decisão será mostrada no separador de árvores sombra.
+                WARNING: you don't seem to have graphviz in your path (cannot run 'dot -V'), 
+                so no dtreeviz visualisation of decision trees will be shown on the shadow trees tab.
 
-                Veja https://github.com/parrt/dtreeviz para informações sobre como instalar corretamente o graphviz 
-                para dtreeviz. 
-                """ # Traduzido
+                See https://github.com/parrt/dtreeviz for info on how to properly install graphviz 
+                for dtreeviz. 
+                """
                 )
                 self._graphviz_available = False
             else:
@@ -4701,7 +4671,7 @@ class TreeExplainer(BaseExplainer):
         """
         assert (
             tree_idx >= 0 and tree_idx < len(self.shadow_trees)
-        ), f"índice da árvore {tree_idx} fora do intervalo 0 e número de árvores ({len(self.decision_trees)})" # Traduzido
+        ), f"tree index {tree_idx} outside 0 and number of trees ({len(self.decision_trees)}) range"
         X_row = self.get_X_row(index)
         if self.is_classifier:
             return get_decisionpath_df(
@@ -4745,7 +4715,7 @@ class TreeExplainer(BaseExplainer):
 
         """
         if not self.graphviz_available:
-            print("Executável 'dot' do graphviz não disponível!") # Traduzido
+            print("No graphviz 'dot' executable available!")
             return None
 
         viz = DTreeVizAPI(self.shadow_trees[tree_idx])
@@ -4792,7 +4762,7 @@ class TreeExplainer(BaseExplainer):
 
         """
         if not self.graphviz_available:
-            print("Executável 'dot' do graphviz não disponível!") # Traduzido
+            print("No graphviz 'dot' executable available!")
             return None
         svg = open(self.decisiontree_file(tree_idx, index, show_just_path), "rb").read()
         encoded = base64.b64encode(svg)
@@ -4847,13 +4817,13 @@ class RandomForestExplainer(TreeExplainer):
         """a list of ShadowDecTree objects"""
         if not hasattr(self, "_shadow_trees"):
             print(
-                "A calcular ShadowDecTree para cada árvore de decisão individual...", # Traduzido
+                "Calculating ShadowDecTree for each individual decision tree...",
                 flush=True,
             )
             assert hasattr(
                 self.model, "estimators_"
-            ), """self.model não tem um atributo estimators_, provavelmente não é 
-                um RandomForest do sklearn?""" # Traduzido
+            ), """self.model does not have an estimators_ attribute, so probably not
+                actually a sklearn RandomForest?"""
             y = self.y if self.y_missing else self.y.astype("int16")
             self._shadow_trees = [
                 ShadowDecTree.get_shadow_tree(
@@ -4922,7 +4892,7 @@ class XGBExplainer(TreeExplainer):
     @property
     def model_dump_list(self):
         if not hasattr(self, "_model_dump_list"):
-            print("A gerar dump do modelo xgboost...", flush=True) # Traduzido
+            print("Generating xgboost model dump...", flush=True)
             self._model_dump_list = self.model.get_booster().get_dump()
         return self._model_dump_list
 
@@ -4940,7 +4910,7 @@ class XGBExplainer(TreeExplainer):
         """a list of ShadowDecTree objects"""
         if not hasattr(self, "_shadow_trees"):
             print(
-                "A calcular ShadowDecTree para cada árvore de decisão individual...", # Traduzido
+                "Calculating ShadowDecTree for each individual decision tree...",
                 flush=True,
             )
 
@@ -4974,8 +4944,7 @@ class XGBExplainer(TreeExplainer):
         """
         assert (
             tree_idx >= 0 and tree_idx < self.no_of_trees
-        ), f"índice da árvore {tree_idx} fora do intervalo 0 e número de árvores ({self.no_of_trees})" # Traduzido (no_of_trees)
-        # Atenção: A variável `self.decision_trees` não existe, parece ser um erro de digitação no código original. Usei `self.no_of_trees`
+        ), f"tree index {tree_idx} outside 0 and number of trees ({len(self.decision_trees)}) range"
 
         if self.is_classifier:
             if len(self.labels) > 2:
@@ -5016,7 +4985,7 @@ class XGBExplainer(TreeExplainer):
 
         """
         if not self.graphviz_available:
-            print("Executável 'dot' do graphviz não disponível!") # Traduzido
+            print("No graphviz 'dot' executable available!")
             return None
 
         if self.is_classifier:

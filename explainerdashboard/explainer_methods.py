@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 __all__ = [
     "IndexNotFoundError",
     "append_dict_to_df",
@@ -74,9 +72,9 @@ def append_dict_to_df(df: pd.DataFrame, row_dict: dict) -> pd.DataFrame:
 
 
 class IndexNotFoundError(Exception):
-    def __init__(self, message="Índice não encontrado", index=None): # Traduzido
+    def __init__(self, message="Index not Found", index=None):
         if index is not None:
-            message = f"Índice {index} não encontrado!" # Traduzido
+            message = f"Index {index} not found!"
         super().__init__(message)
 
 
@@ -197,7 +195,7 @@ def parse_cats(X, cats, sep: str = "_"):
                 v
             ).issubset(
                 set(all_cols)
-            ), f"Estas colunas cats para {k} não foram encontradas em X.columns: {set(v)-set(all_cols)}!" # Traduzido
+            ), f"These cats columns for {k} could not be found in X.columns: {set(v)-set(all_cols)}!"
             col_counter.update(v)
         onehot_dict = cats
     elif isinstance(cats, list):
@@ -211,25 +209,22 @@ def parse_cats(X, cats, sep: str = "_"):
                         v
                     ).issubset(
                         set(all_cols)
-                    ), f"Estas colunas cats para {k} não foram encontradas em X.columns: {set(v)-set(all_cols)}!" # Traduzido
+                    ), f"These cats columns for {k} could not be found in X.columns: {set(v)-set(all_cols)}!"
                     col_counter.update(v)
                     onehot_dict[k] = v
     multi_cols = [v for v, c in col_counter.most_common() if c > 1]
     assert not multi_cols, (
-        # Traduzido
-        f"As seguintes colunas parecem ter sido passadas para cats múltiplas vezes: {multi_cols}. "
-        "Por favor, certifique-se de que cada coluna one-hot-encoded é atribuída apenas a uma coluna cat!"
+        f"The following columns seem to have been passed to cats multiple times: {multi_cols}. "
+        "Please make sure that each onehot encoded column is only assigned to one cat column!"
     )
     assert not set(onehot_dict.keys()) & set(all_cols), (
-        # Traduzido
-        f"Estas novas colunas cats já estão em X.columns: {list(set(onehot_dict.keys()) & set(all_cols))}! "
-        "Por favor, selecione um nome diferente para as suas novas colunas cats!"
+        f"These new cats columns are already in X.columns: {list(set(onehot_dict.keys()) & set(all_cols))}! "
+        "Please select a different name for your new cats columns!"
     )
     for col, count in col_counter.most_common():
         assert set(X[col].astype(int).unique()).issubset(
             {0, 1}
-            # Traduzido
-        ), f"{col} não é uma coluna one-hot-encoded (i.e., tem valores diferentes de 0, 1)!"
+        ), f"{col} is not a onehot encoded column (i.e. has values other than 0, 1)!"
     onehot_cols = list(onehot_dict.keys())
     for col in [col for col in all_cols if col not in col_counter.keys()]:
         onehot_dict[col] = [col]
@@ -262,18 +257,16 @@ def split_pipeline(pipeline: Pipeline, verbose: int = 1):
         pipeline, "sklearn.pipeline.Pipeline", "imblearn.pipeline.Pipeline"
     ):
         raise ValueError(
-            # Traduzido
-            f"pipeline deve ser um pipeline sklearn ou imblearn, mas você passou {pipeline}!"
+            f"pipeline should either be an sklearn or an imblearn pipeline, but you passed {pipeline}!"
         )
 
     assert hasattr(pipeline.steps[-1][1], "predict"), (
-        # Traduzido
-        "Ao passar um sklearn.Pipeline, o último passo do pipeline deve ser um modelo, "
-        f"mas {pipeline.steps[-1][1]} não tem uma função .predict()!"
+        "When passing an sklearn.Pipeline, the last step of the pipeline should be a model, "
+        f"but {pipeline.steps[-1][1]} does not have a .predict() function!"
     )
 
     if verbose:
-        print("a dividir o pipeline...", flush=True) # Traduzido
+        print("splitting pipeline...", flush=True)
         skipped_transforms = [
             name
             for name, transform in pipeline.steps[:-1]
@@ -281,8 +274,7 @@ def split_pipeline(pipeline: Pipeline, verbose: int = 1):
         ]
         if skipped_transforms:
             print(
-                 # Traduzido
-                f"A ignorar os seguintes passos que não têm um método .transform(): {', '.join(skipped_transforms)}...",
+                f"Skipping the following steps that lack a .transform() method: {', '.join(skipped_transforms)}...",
                 flush=True,
             )
 
@@ -326,25 +318,22 @@ def get_transformed_X(
             columns = list(transformer_pipeline.get_feature_names_out())
             if len(columns) != X_transformed.shape[1]:
                 raise ValueError(
-                     # Traduzido
-                    f"len(pipeline[:-1].get_feature_names_out())={len(columns)} não é"
-                    f" igual a X_transformed.shape[1]={X_transformed.shape[1]}!"
+                    f"len(pipeline[:-1].get_feature_names_out())={len(columns)} does"
+                    f" not equal X_transformed.shape[1]={X_transformed.shape[1]}!"
                 )
             return pd.DataFrame(X_transformed, columns=columns)
         except:
             if verbose:
                 print(
-                    # Traduzido
-                    "Falha ao obter novos nomes de colunas de transformer_pipeline.get_feature_names_out()!"
+                    "Failed to retrieve new column names from transformer_pipeline.get_feature_names_out()!"
                 )
 
     if X_transformed.shape == X.values.shape:
         if verbose:
             print(
-                # Traduzido
-                "o pipeline do transformador produz um DataFrame com o mesmo número de colunas, "
-                f"então a tentar atribuir nomes de colunas de X.columns: {X.columns.tolist()}, "
-                "certifique-se de que o seu pipeline não adiciona, remove ou reordena colunas!",
+                "transformer pipeline outputs a DataFrame with the same number of columns"
+                f"so trying to assign column names from X.columns: {X.columns.tolist()}, so"
+                " make sure that your pipeline does not add, remove or reorders columns!",
                 flush=True,
             )
         try:
@@ -354,16 +343,14 @@ def get_transformed_X(
             return pd.DataFrame(X_transformed, columns=X.columns)
         except:
             print(
-                 # Traduzido
-                f".n_features_in_ não correspondeu a len(X.columns)={len(X.columns)} para o passo do pipeline {i}: {pipe}!"
+                f".n_features_in_ did not match len(X.columns)={len(X.columns)} for pipeline step {i}: {pipe}!"
             )
 
     if verbose:
         print(
-             # Traduzido
-            "O pipeline não tem um método .get_feature_names_out() funcional, "
-            "nem todos os passos do pipeline retornam o mesmo número de colunas que a entrada, "
-            "portanto, a atribuir nomes de colunas 'col1', 'col2', etc.!"
+            "Pipeline does not have a functioning .get_feature_names_out() method, "
+            "nor do all pipeline steps return the same number of columns as input, "
+            "so assigning columns names 'col1', 'col2', etc instead!"
         )
     columns = [f"col{i+1}" for i in range(X_transformed.shape[1])]
 
@@ -459,8 +446,7 @@ def remove_cat_names(X_cats, onehot_dict, onehot_missing_dict=None):
                 c: (c[len(cat) + 1 :] if c.startswith(cat + "_") else c) for c in cols
             }
             if onehot_missing_dict:
-                # Traduzido "MISSING"
-                mapping.update({onehot_missing_dict[cat]: "AUSENTE"})
+                mapping.update({onehot_missing_dict[cat]: onehot_missing_dict[cat]})
             X_cats[cat] = X_cats[cat].map(mapping, na_action="ignore")
     return X_cats
 
@@ -858,7 +844,7 @@ def get_grid_points(array, n_grid_points=10, min_percentage=0, max_percentage=10
     else:
         array = np.array(array)
     if not is_numeric_dtype(array):
-        raise ValueError("array deve ter um dtype numérico!") # Traduzido
+        raise ValueError("array should be a numeric dtype!")
 
     percentile_grids = np.linspace(
         start=min_percentage, stop=max_percentage, num=n_grid_points
@@ -921,9 +907,8 @@ def get_pdp_df(
             grid_values = feature
         else:
             raise ValueError(
-                 # Traduzido
-                "feature deve ser um nome de coluna (str), "
-                "ou uma lista de colunas one-hot-encoded!"
+                "feature should either be a column name (str), "
+                "or a list of onehot-encoded columns!"
             )
 
     if is_classifier:
@@ -945,9 +930,8 @@ def get_pdp_df(
         if isinstance(feature, list):
             if grid_value in X_sample.columns:
                 assert set(X_sample[grid_value].unique()).issubset({0, 1}), (
-                    # Traduzido
-                    f"{grid_values} Ao passar uma lista de características, estas têm de ser one-hot-encoded!"
-                    f"Mas X_sample['{grid_value}'].unique()=={list(set(X_sample[grid_value].unique()))}"
+                    f"{grid_values} When passing a list of features these have to be onehotencoded!"
+                    f"But X_sample['{grid_value}'].unique()=={list(set(X_sample[grid_value].unique()))}"
                 )
             dtemp.loc[:, feature] = [1 if col == grid_value else 0 for col in feature]
         else:
@@ -1008,7 +992,7 @@ def get_precision_df(
 
     assert (bin_size is not None and quantiles is None) or (
         bin_size is None and quantiles is not None
-    ), "passe apenas bin_size ou apenas quantiles!" # Traduzido
+    ), "either only pass bin_size or only pass quantiles!"
 
     if len(pred_probas.shape) == 2:
         # in case the full binary classifier pred_proba is passed,
@@ -1224,13 +1208,11 @@ def get_contrib_df(
     """
     assert isinstance(
         X_row, pd.DataFrame
-        # Traduzido
-    ), "X_row deve ser um pd.DataFrame! Use X.iloc[[index]]"
+    ), "X_row should be a pd.DataFrame! Use X.iloc[[index]]"
     assert (
         len(X_row.iloc[[0]].values[0].shape) == 1
-        # Traduzido
-    ), """X não tem a forma correta: len(X.values[0]) deve ser 1. 
-            Tente passar X.iloc[[index]]"""
+    ), """X is not the right shape: len(X.values[0]) should be 1. 
+            Try passing X.iloc[[index]]"""
     assert sort in {"abs", "high-to-low", "low-to-high", "importance", None}
 
     # start with the shap_base_value
@@ -1256,7 +1238,7 @@ def get_contrib_df(
 
         display_df_neg = display_df[display_df.contribution < 0]
         display_df_pos = display_df[display_df.contribution >= 0]
-        # print(contrib_df[~contrib_df.col.isin(display_df.col.tolist())]) # Comentado
+        print(contrib_df[~contrib_df.col.isin(display_df.col.tolist())])
 
         rest_df = pd.DataFrame(
             {
@@ -1347,26 +1329,21 @@ def get_contrib_summary_df(
 
     """
     assert model_output in {"raw", "probability", "logodds"}
-    # Traduzido nomes das colunas
-    contrib_summary_df = pd.DataFrame(columns=["Motivo", "Efeito"])
+    contrib_summary_df = pd.DataFrame(columns=["Reason", "Effect"])
 
     for _, row in contrib_df.iterrows():
         if row["col"] == "_BASE":
-            # Traduzido
-            reason = "Média da população"
+            reason = "Average of population"
             effect = ""
         elif row["col"] == "_REST":
-             # Traduzido
-            reason = "Outras características combinadas"
+            reason = "Other features combined"
             effect = f"{'+' if row['contribution'] >= 0 else ''}"
         elif row["col"] == "_PREDICTION":
-             # Traduzido
-            reason = "Previsão final"
+            reason = "Final prediction"
             effect = ""
         else:
             if na_fill is not None and row["value"] == na_fill:
-                 # Traduzido
-                reason = f"{row['col']} = AUSENTE"
+                reason = f"{row['col']} = MISSING"
             else:
                 reason = f"{row['col']} = {row['value']}"
 
@@ -1379,7 +1356,7 @@ def get_contrib_summary_df(
             effect += str(np.round(row["contribution"], round)) + f" {units}"
 
         contrib_summary_df = append_dict_to_df(
-            contrib_summary_df, dict(Motivo=reason, Efeito=effect) # Traduzido chaves dict
+            contrib_summary_df, dict(Reason=reason, Effect=effect)
         )
 
     return contrib_summary_df.reset_index(drop=True)
@@ -1467,10 +1444,9 @@ def get_decisionpath_df(decision_tree, observation, pos_label=1):
                         "feature": node.feature_name(),
                         "value": observation[node.feature_name()],
                         "split": node.split(),
-                         # Traduzido 'left' e 'right'
-                        "direction": "esquerda"
+                        "direction": "left"
                         if observation[node.feature_name()] < node.split()
-                        else "direita",
+                        else "right",
                         "left": node_pred_proba(node.left),
                         "right": node_pred_proba(node.right),
                         "diff": node_pred_proba(node.left) - node_pred_proba(node)
@@ -1494,10 +1470,9 @@ def get_decisionpath_df(decision_tree, observation, pos_label=1):
                         "feature": node.feature_name(),
                         "value": observation[node.feature_name()],
                         "split": node.split(),
-                        # Traduzido 'left' e 'right'
-                        "direction": "esquerda"
+                        "direction": "left"
                         if observation[node.feature_name()] < node.split()
-                        else "direita",
+                        else "right",
                         "left": node_mean(node.left),
                         "right": node_mean(node.right),
                         "diff": node_mean(node.left) - node_mean(node)
@@ -1538,18 +1513,17 @@ def get_decisiontree_summary_df(decisiontree_df, classifier=False, round=2, unit
             + decisiontree_df.iloc[[-1]]["diff"].item(),
             round,
         )
-    # Traduzido nomes de colunas
+
     decisiontree_summary_df = pd.DataFrame(
-        columns=["Característica", "Condição", "Ajuste", "Nova Previsão"]
+        columns=["Feature", "Condition", "Adjustment", "New Prediction"]
     )
     decisiontree_summary_df = append_dict_to_df(
         decisiontree_summary_df,
         {
-            # Traduzido colunas e valores
-            "Característica": "",
-            "Condição": "",
-            "Ajuste": "Média inicial",
-            "Nova Previsão": str(np.round(base_value, round))
+            "Feature": "",
+            "Condition": "",
+            "Adjustment": "Starting average",
+            "New Prediction": str(np.round(base_value, round))
             + ("%" if classifier else f" {units}"),
         },
     )
@@ -1559,15 +1533,14 @@ def get_decisiontree_summary_df(decisiontree_df, classifier=False, round=2, unit
             decisiontree_summary_df = append_dict_to_df(
                 decisiontree_summary_df,
                 {
-                    # Traduzido colunas e 'right'
-                    "Característica": row["feature"],
-                    "Condição": str(row["value"])
-                    + str(" >= " if row["direction"] == "direita" else " < ")
+                    "Feature": row["feature"],
+                    "Condition": str(row["value"])
+                    + str(" >= " if row["direction"] == "right" else " < ")
                     + str(row["split"]).ljust(10),
-                    "Ajuste": str("+" if row["diff"] >= 0 else "")
+                    "Adjustment": str("+" if row["diff"] >= 0 else "")
                     + str(np.round(100 * row["diff"], round))
                     + "%",
-                    "Nova Previsão": str(
+                    "New Prediction": str(
                         np.round(100 * (row["average"] + row["diff"]), round)
                     )
                     + "%",
@@ -1577,14 +1550,13 @@ def get_decisiontree_summary_df(decisiontree_df, classifier=False, round=2, unit
             decisiontree_summary_df = append_dict_to_df(
                 decisiontree_summary_df,
                 {
-                     # Traduzido colunas e 'right'
-                    "Característica": row["feature"],
-                    "Condição": str(row["value"])
-                    + str(" >= " if row["direction"] == "direita" else " < ")
+                    "Feature": row["feature"],
+                    "Condition": str(row["value"])
+                    + str(" >= " if row["direction"] == "right" else " < ")
                     + str(row["split"]).ljust(10),
-                    "Ajuste": str("+" if row["diff"] >= 0 else "")
+                    "Adjustment": str("+" if row["diff"] >= 0 else "")
                     + str(np.round(row["diff"], round)),
-                    "Nova Previsão": str(
+                    "New Prediction": str(
                         np.round((row["average"] + row["diff"]), round)
                     )
                     + f" {units}",
@@ -1594,11 +1566,10 @@ def get_decisiontree_summary_df(decisiontree_df, classifier=False, round=2, unit
     decisiontree_summary_df = append_dict_to_df(
         decisiontree_summary_df,
         {
-            # Traduzido colunas e valores
-            "Característica": "",
-            "Condição": "",
-            "Ajuste": "Previsão Final",
-            "Nova Previsão": str(np.round(prediction, round))
+            "Feature": "",
+            "Condition": "",
+            "Adjustment": "Final Prediction",
+            "New Prediction": str(np.round(prediction, round))
             + ("%" if classifier else "")
             + f" {units}",
         },
@@ -1664,8 +1635,7 @@ def get_xgboost_path_df(xgbmodel, X_row, n_tree=None):
         xgbmodel_treedump = xgbmodel.get_booster().get_dump()[n_tree]
     else:
         raise ValueError(
-            # Traduzido
-            "Não foi possível extrair um dump da árvore. Por favor, passe um modelo xgboost treinado."
+            "Couldn't extract a treedump. Please pass a fitted xgboost model."
         )
     if isinstance(X_row, pd.DataFrame) and len(X_row) == 1:
         X_row = X_row.squeeze()
@@ -1708,7 +1678,6 @@ def get_xgboost_path_summary_df(xgboost_path_df, output="margin"):
     Returns:
         pd.DataFrame: dataframe with nodes and split conditions
     """
-    # Mantido nomes de colunas internos
     xgboost_path_summary_df = pd.DataFrame(columns=["node", "split_condition"])
 
     for row in xgboost_path_df.itertuples():
@@ -1717,8 +1686,7 @@ def get_xgboost_path_summary_df(xgboost_path_df, output="margin"):
                 xgboost_path_summary_df,
                 dict(
                     node=row.node,
-                     # Traduzido
-                    split_condition=f"previsão ({output}) = {row.value}",
+                    split_condition=f"prediction ({output}) = {row.value}",
                 ),
             )
         elif row.value < row.cutoff:
@@ -1763,7 +1731,7 @@ def get_xgboost_preds_df(xgbmodel, X_row, pos_label=1):
             elif pos_label == 0:
                 base_proba = 1 - xgbmodel.get_params()["base_score"] or 0.5
             else:
-                raise ValueError("pos_label deve ser 0 ou 1!") # Traduzido
+                raise ValueError("pos_label should be either 0 or 1!")
             n_trees = len(xgbmodel.get_booster().get_dump())
             base_score = np.log(base_proba / (1 - base_proba))
         else:
@@ -1776,7 +1744,7 @@ def get_xgboost_preds_df(xgbmodel, X_row, pos_label=1):
         base_score = xgbmodel.get_params()["base_score"]
         n_trees = len(xgbmodel.get_booster().get_dump())
     else:
-        raise ValueError("Passe um XGBClassifier ou XGBRegressor!") # Traduzido
+        raise ValueError("Pass either an XGBClassifier or XGBRegressor!")
 
     if is_classifier:
         if n_classes == 2:
