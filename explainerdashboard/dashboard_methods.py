@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 __all__ = [
     "delegates_kwargs",
     "delegates_doc",
@@ -277,8 +275,7 @@ class ExplainerComponent(ABC):
         if not hasattr(self, "name") or self.name is None:
             self.name = name or yield_id()
         if not hasattr(self, "title") or self.title is None:
-            # Traduzido o título padrão
-            self.title = title or "Personalizado"
+            self.title = title or "Custom"
 
         self._components = []
         self._dependencies = []
@@ -358,13 +355,12 @@ class ExplainerComponent(ABC):
                         self._components.append(subcomp)
                     else:
                         print(
-                            # Traduzido
-                            f"{subcomp.__class__.__name__} não é um ExplainerComponent, não será adicionado a self.components"
+                            f"{subcomp.__name__} is not an ExplainerComponent so not adding to self.components"
                         )
-            # else: # Comentado pois pode ser muito verboso
-            #     print(
-            #         f"{comp.__class__.__name__} is not an ExplainerComponent so not adding to self.components"
-            #     )
+            else:
+                print(
+                    f"{comp.__name__} is not an ExplainerComponent so not adding to self.components"
+                )
 
         for k, v in self.__dict__.items():
             if (
@@ -381,7 +377,7 @@ class ExplainerComponent(ABC):
         for comp in self._components:
             if str(type(comp)).endswith("PosLabelConnector'>"):
                 return True
-            elif hasattr(comp, 'has_pos_label_connector') and comp.has_pos_label_connector(): # Adicionado hasattr
+            elif comp.has_pos_label_connector():
                 return True
         return False
 
@@ -397,13 +393,11 @@ class ExplainerComponent(ABC):
                         self._dependencies.append(subdep)
                     else:
                         print(
-                            # Traduzido
-                            f"{subdep.__class__.__name__} não é uma string, não será adicionado a self.dependencies"
+                            f"{subdep.__name__} is not a str so not adding to self.dependencies"
                         )
             else:
                 print(
-                    # Traduzido
-                    f"{dep.__class__.__name__} não é uma string ou lista de strings, não será adicionado a self.dependencies"
+                    f"{dep.__name__} is not a str or list of str so not adding to self.dependencies"
                 )
 
     @property
@@ -440,8 +434,7 @@ class ExplainerComponent(ABC):
                 or not isinstance(tup[1], str)
             ):
                 raise ValueError(
-                    # Traduzido
-                    f"Esperado uma tupla (id:str, property:str) mas {self} tem _state_props['{key}'] == {tup}"
+                    f"Expected a (id:str, property:str) tuple but {self} has _state_props['{key}'] == {tup}"
                 )
         _state_tuples = [
             (id_ + self.name, prop_) for id_, prop_ in self._state_props.values()
@@ -494,10 +487,9 @@ class ExplainerComponent(ABC):
                 if callable(attribute):
                     _ = attribute()
             except:
-                # Traduzido
                 ValueError(
-                    f"Falha ao gerar dependência '{dep}': "
-                    f"Falha ao calcular ou recuperar a propriedade do explainer explainer.{dep}..."
+                    f"Failed to generate dependency '{dep}': "
+                    "Failed to calculate or retrieve explainer property explainer.{dep}..."
                 )
 
     def layout(self):
@@ -530,9 +522,8 @@ class ExplainerComponent(ABC):
         """register callbacks specific to this ExplainerComponent."""
         if hasattr(self, "_register_callbacks"):
             print(
-                # Traduzido
-                "Aviso: o uso de _register_callbacks() será descontinuado!"
-                " Use component_callbacks() a partir de agora..."
+                "Warning: the use of _register_callbacks() will be deprecated!"
+                " Use component_callbacks() from now on..."
             )
             self._register_callbacks(app)
 
@@ -552,7 +543,7 @@ class PosLabelSelector(ExplainerComponent):
     """
 
     def __init__(
-        self, explainer, title="Seletor de Classe Positiva", name=None, pos_label=None # Traduzido title default
+        self, explainer, title="Pos Label Selector", name=None, pos_label=None
     ):
         """Generates a positive label selector with element id 'pos_label-'+self.name
 
@@ -562,7 +553,7 @@ class PosLabelSelector(ExplainerComponent):
             title (str, optional): Title of tab or page. Defaults to None.
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
-                        it's unique. Defaults to 'Seletor de Classe Positiva'. # Atualizado docstring
+                        it's unique. Defaults to 'Pos Label Selector'.
             pos_label (int, optional): Initial pos label. Defaults to
                         explainer.pos_label.
         """
@@ -579,14 +570,13 @@ class PosLabelSelector(ExplainerComponent):
                     html.Div(
                         [
                             dbc.Label(
-                                "Classe positiva:", # Traduzido
+                                "Positive class:",
                                 html_for="pos-label-" + self.name,
                                 id="pos-label-label-" + self.name,
                                 style={"font-size": "16"},
                             ),
                             dbc.Tooltip(
-                                # Traduzido
-                                "Selecione a etiqueta a ser definida como classe positiva",
+                                "Select the label to be set as the positive class",
                                 target="pos-label-label-" + self.name,
                             ),
                         ]
@@ -641,10 +631,7 @@ class IndexSelector(ExplainerComponent):
                     options client side. Defaults to 1000.
         """
         super().__init__(explainer, name=name)
-        # Assume explainer.index_name já está traduzido (foi feito no ficheiro explainers.py)
-        self.index_name = explainer.index_name
-        # Correção: o name do componente deve ser o name passado ou gerado, não o index_name
-        # self.name já é definido em super().__init__
+        self.index_name = self.name
 
     def layout(self):
         if self.index_dropdown:
@@ -652,16 +639,14 @@ class IndexSelector(ExplainerComponent):
             if len(index_list) > self.max_idxs_in_dropdown:
                 return dcc.Dropdown(
                     id=self.name,
-                    # Traduzido placeholder
-                    placeholder=f"Pesquisar {self.index_name} aqui...",
+                    placeholder=f"Search {self.explainer.index_name} here...",
                     value=self.index,
                     searchable=True,
                 )
             else:
                 return dcc.Dropdown(
                     id=self.name,
-                     # Traduzido placeholder
-                    placeholder=f"Selecionar {self.index_name} aqui...",
+                    placeholder=f"Select {self.explainer.index_name} here...",
                     options=index_list.astype(str).to_list(),
                     searchable=True,
                     value=self.index,
@@ -669,8 +654,7 @@ class IndexSelector(ExplainerComponent):
         else:
             return dbc.Input(
                 id=self.name,
-                # Traduzido placeholder
-                placeholder=f"Digite {self.index_name} aqui...",
+                placeholder=f"Type {self.explainer.index_name} here...",
                 value=self.index,
                 debounce=True,
                 type="text",
@@ -722,9 +706,9 @@ class GraphPopout(ExplainerComponent):
         self,
         name: str,
         graph_id: str,
-        title: str = "Expandir", # Traduzido default
+        title: str = "Popout",
         description: str = None,
-        button_text: str = "Expandir", # Traduzido default
+        button_text: str = "Popout",
         button_size: str = "sm",
         button_outline: bool = True,
     ):
@@ -733,9 +717,9 @@ class GraphPopout(ExplainerComponent):
             name (str): name id for this GraphPopout. Should be unique.
             graph_id (str): id of of the dcc.Graph component that gets included
                 in the modal.
-            title (str): Title above the modal. Defaults to Expandir. # Atualizado docstring
+            title (str): Title above the modal. Defaults to Popout.
             description (str): description of the graph to be include in the footer.
-            button_text (str, optional): Text on the Button. Defaults to "Expandir". # Atualizado docstring
+            button_text (str, optional): Text on the Button. Defaults to "Popout".
             button_size (str, optiona). Size of the button.Defaults to "sm" or small.
             button_outline (bool, optional). Show outline of button instead with fill color.
                 Defaults to True.
@@ -755,7 +739,7 @@ class GraphPopout(ExplainerComponent):
         return html.Div(
             [
                 dbc.Button(
-                    self.button_text, # Usa o texto do botão (já traduzido no init ou passado)
+                    self.button_text,
                     id=self.name + "modal-open",
                     size=self.button_size,
                     color="secondary",
@@ -764,7 +748,7 @@ class GraphPopout(ExplainerComponent):
                 dbc.Modal(
                     [
                         # ToDo the X on the top right is not rendered properly, disabling
-                        dbc.ModalHeader(dbc.ModalTitle(self.title), close_button=True), # Usa o título (já traduzido no init ou passado)
+                        dbc.ModalHeader(dbc.ModalTitle(self.title), close_button=True),
                         dbc.ModalBody(
                             dcc.Graph(
                                 id=self.name + "-modal-graph",
@@ -780,7 +764,7 @@ class GraphPopout(ExplainerComponent):
                                                 html.Div(
                                                     [
                                                         dbc.Button(
-                                                            html.Small("Descrição"), # Traduzido
+                                                            html.Small("Description"),
                                                             id=self.name
                                                             + "-show-description",
                                                             color="link",
@@ -810,7 +794,7 @@ class GraphPopout(ExplainerComponent):
                                         html.Div(
                                             [
                                                 dbc.Button(
-                                                    "Fechar", # Traduzido
+                                                    "Close",
                                                     id=self.name + "-modal-close",
                                                     className="mr-auto",
                                                 )
@@ -893,9 +877,8 @@ def instantiate_component(component, explainer, name=None, **kwargs):
     if inspect.isclass(component) and issubclass(component, ExplainerComponent):
         init_argspec = inspect.getfullargspec(component.__init__)
         assert len(init_argspec.args) > 1 and init_argspec.args[1] == "explainer", (
-            # Traduzido
-            f"O primeiro parâmetro de {component.__name__}.__init__ deve ser 'explainer'. "
-            f"Em vez disso, o __init__ é: {component.__name__}.__init__{inspect.signature(component.__init__)}"
+            f"The first parameter of {component.__name__}.__init__ should be 'explainer'. "
+            f"Instead the __init__ is: {component.__name__}.__init__{inspect.signature(component.__init__)}"
         )
         if not init_argspec.varkw:
             kwargs = {
@@ -907,17 +890,17 @@ def instantiate_component(component, explainer, name=None, **kwargs):
             component = component(explainer, name=name, **kwargs)
         else:
             print(
-                 # Traduzido
-                f"ExplainerComponent {component.__name__} não aceita um parâmetro name, "
-                f"portanto não é possível atribuir name='{name}': "
+                f"ExplainerComponent {component} does not accept a name parameter, "
+                f"so cannot assign name='{name}': "
                 f"{component.__name__}.__init__{inspect.signature(component.__init__)}. "
-                "Certifique-se de definir super().__init__(name=...) explicitamente "
-                "dentro do __init__ se quiser implementar em vários workers ou num cluster, "
-                "caso contrário, cada instância no cluster gerará o seu próprio nome uuid aleatório!"
+                "Make sure to set super().__init__(name=...) explicitly yourself "
+                "inside the __init__ if you want to deploy across multiple "
+                "workers or a cluster, as otherwise each instance in the "
+                "cluster will generate its own random uuid name!"
             )
             component = component(explainer, **kwargs)
         return component
     elif isinstance(component, ExplainerComponent):
         return component
     else:
-        raise ValueError(f"{component} não é um ExplainerComponent válido...") # Traduzido
+        raise ValueError(f"{component} is not a valid ExplainerComponent...")
