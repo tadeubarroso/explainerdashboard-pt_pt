@@ -72,7 +72,7 @@ class ExplainerTabsLayout(ExplainerComponent):
         self,
         explainer,
         tabs,
-        title="Explicador do Modelo",  # Traduzido
+        title="Model Explainer",
         name=None,
         description=None,
         header_hide_title=False,
@@ -93,7 +93,7 @@ class ExplainerTabsLayout(ExplainerComponent):
             explainer ([type]): explainer
             tabs (list[ExplainerComponent class or instance]): list of
                 ExplainerComponent class definitions or instances.
-            title (str, optional): [description]. Defaults to 'Explicador do Modelo'. # Atualizado docstring (opcional)
+            title (str, optional): [description]. Defaults to 'Model Explainer'.
             description (str, optional): description tooltip to add to the title.
             header_hide_title (bool, optional): Hide the title. Defaults to False.
             header_hide_selector (bool, optional): Hide the positive label selector.
@@ -122,7 +122,7 @@ class ExplainerTabsLayout(ExplainerComponent):
         ]
         assert (
             len(self.tabs) > 0
-        ), "Ao passar uma lista para 'tabs', é necessário passar pelo menos um separador válido!" # Traduzido assert message
+        ), "When passing a list to tabs, need to pass at least one valid tab!"
 
         self.register_components(*self.tabs)
 
@@ -166,7 +166,7 @@ class ExplainerTabsLayout(ExplainerComponent):
                                             dbc.DropdownMenu(
                                                 [
                                                     dbc.DropdownMenuItem(
-                                                        "Todos os separadores",  # Traduzido
+                                                        "All tabs",
                                                         id="download-button-all"
                                                         + self.name,
                                                         n_clicks=None,
@@ -174,7 +174,7 @@ class ExplainerTabsLayout(ExplainerComponent):
                                                     dbc.DropdownMenuItem(divider=True),
                                                     *[
                                                         dbc.DropdownMenuItem(
-                                                            tab.title, # Assume que tab.title já está traduzido
+                                                            tab.title,
                                                             id="download-button-"
                                                             + tab.name,
                                                             n_clicks=None,
@@ -182,7 +182,7 @@ class ExplainerTabsLayout(ExplainerComponent):
                                                         for tab in self.downloadable_tabs
                                                     ],
                                                 ],
-                                                label="Descarregar", # Traduzido
+                                                label="Download",
                                                 color="link",
                                                 right=True,
                                             ),
@@ -208,7 +208,7 @@ class ExplainerTabsLayout(ExplainerComponent):
                     value=self.tabs[0].name,
                     children=[
                         dcc.Tab(
-                            label=tab.title, # Assume que tab.title já está traduzido
+                            label=tab.title,
                             id=tab.name,
                             value=tab.name,
                             children=tab.layout(),
@@ -219,10 +219,10 @@ class ExplainerTabsLayout(ExplainerComponent):
                 make_hideable(
                     html.Div(
                         [
-                            html.Small("desenvolvido por: "), # Traduzido
+                            html.Small("powered by: "),
                             html.Small(
                                 html.A(
-                                    "explainerdashboard", # Mantido nome do projeto
+                                    "explainerdashboard",
                                     className="text-muted",
                                     target="_blank",
                                     href="https://github.com/oegedijk/explainerdashboard",
@@ -242,9 +242,9 @@ class ExplainerTabsLayout(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.title(self.title) # Assume self.title traduzido
+        html = to_html.title(self.title)
         tabs = {
-            tab.title: tab.to_html(state_dict, add_header=False) for tab in self.tabs # Assume tab.title traduzido
+            tab.title: tab.to_html(state_dict, add_header=False) for tab in self.tabs
         }
         tabs = {tab: html for tab, html in tabs.items() if html != "<div></div>"}
         html += to_html.tabs(tabs)
@@ -258,14 +258,14 @@ class ExplainerTabsLayout(ExplainerComponent):
             try:
                 tab.register_callbacks(app)
             except AttributeError:
-                print(f"Aviso: {tab} não possui um método register_callbacks!") # Traduzido
+                print(f"Warning: {tab} does not have a register_callbacks method!")
 
         if not self.block_selector_callbacks:
             if any([tab.has_pos_label_connector() for tab in self.tabs]):
                 print(
-                    "Aviso: detetados PosLabelConnectors já no layout. " # Traduzido
-                    "Isto pode entrar em conflito com o seletor global de etiqueta pos e gerar erros de callback duplicados. " # Traduzido
-                    "Se assim for, defina block_selector_callbacks=True." # Traduzido
+                    "Warning: detected PosLabelConnectors already in the layout. "
+                    "This may clash with the global pos label selector and generate duplicate callback errors. "
+                    "If so set block_selector_callbacks=True."
                 )
             self.connector.register_callbacks(app)
 
@@ -288,11 +288,11 @@ class ExplainerTabsLayout(ExplainerComponent):
             ctx = dash.callback_context
             button_id = ctx.triggered[0]["prop_id"].split(".")[0]
             if button_id == "download-button-all" + self.name:
-                return dict(content=self.to_html(state_dict), filename="dashboard.html") # Mantido filename
+                return dict(content=self.to_html(state_dict), filename="dashboard.html")
             for tab in self.downloadable_tabs:
                 if button_id == "download-button-" + tab.name:
                     return dict(
-                        content=tab.to_html(state_dict), filename="dashboard.html" # Mantido filename
+                        content=tab.to_html(state_dict), filename="dashboard.html"
                     )
             raise PreventUpdate
 
@@ -302,7 +302,7 @@ class ExplainerTabsLayout(ExplainerComponent):
             try:
                 tab.calculate_dependencies()
             except AttributeError:
-                print(f"Aviso: {tab} não possui um método calculate_dependencies!") # Traduzido
+                print(f"Warning: {tab} does not have a calculate_dependencies method!")
 
 
 class ExplainerPageLayout(ExplainerComponent):
@@ -310,7 +310,7 @@ class ExplainerPageLayout(ExplainerComponent):
         self,
         explainer,
         component,
-        title=None,#"Explicação do Modelo", # Ajustado capitalização
+        title="Model Explainer",
         name=None,
         description=None,
         header_hide_title=False,
@@ -333,7 +333,7 @@ class ExplainerPageLayout(ExplainerComponent):
             explainer ([type]): explainer
             component (ExplainerComponent class or instance): ExplainerComponent
                         class definition or instance.
-            title (str, optional):  Defaults to 'Explicação do Modelo'. # Atualizado docstring
+            title (str, optional):  Defaults to 'Model Explainer'.
             description (str, optional): Will be displayed as title tooltip.
             header_hide_title (bool, optional): Hide the title. Defaults to False.
             header_hide_selector (bool, optional): Hide the positive label selector.
@@ -377,9 +377,9 @@ class ExplainerPageLayout(ExplainerComponent):
                         make_hideable(
                             dbc.Col(
                                 [
-                                    html.H1(self.title, id="dashboard-title"), # Assume self.title traduzido
+                                    html.H1(self.title, id="dashboard-title"),
                                     dbc.Tooltip(
-                                        self.description, target="dashboard-title" # Assume self.description traduzido
+                                        self.description, target="dashboard-title"
                                     ),
                                 ],
                                 width="auto",
@@ -397,7 +397,7 @@ class ExplainerPageLayout(ExplainerComponent):
                                     html.Div(
                                         [
                                             dbc.Button(
-                                                "Descarregar", # Traduzido
+                                                "Download",
                                                 id="download-page-button-" + self.name,
                                                 color="link",
                                             ),
@@ -426,13 +426,13 @@ class ExplainerPageLayout(ExplainerComponent):
                                 [
                                     html.Div(
                                         [
-                                            html.Small("desenvolvido por: "), # Traduzido
+                                            html.Small("powered by: "),
                                             html.Small(
                                                 html.A(
-                                                    "Bright", # Mantido nome próprio/marca
+                                                    "explainerdashboard",
                                                     className="text-muted",
                                                     target="_blank",
-                                                    href="https://brightcity.pt/",
+                                                    href="https://github.com/oegedijk/explainerdashboard",
                                                 )
                                             ),
                                         ]
@@ -450,7 +450,7 @@ class ExplainerPageLayout(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.title(self.title) # Assume self.title traduzido
+        html = to_html.title(self.title)
         html += self.page.to_html(state_dict, add_header=False)
         if add_header:
             return to_html.add_header(html)
@@ -461,16 +461,16 @@ class ExplainerPageLayout(ExplainerComponent):
         try:
             self.page.register_callbacks(app)
         except AttributeError:
-            print(f"Aviso: {self.page} não possui um método register_callbacks!") # Traduzido
+            print(f"Warning: {self.page} does not have a register_callbacks method!")
         if not self.block_selector_callbacks:
             if (
                 hasattr(self.page, "has_pos_label_connector")
                 and self.page.has_pos_label_connector()
             ):
                 print(
-                    "Aviso: detetados PosLabelConnectors já no layout. " # Traduzido
-                    "Isto pode entrar em conflito com o seletor global de etiqueta pos e gerar erros de callback duplicados. " # Traduzido
-                    "Se assim for, defina block_selector_callbacks=True." # Traduzido
+                    "Warning: detected PosLabelConnectors already in the layout. "
+                    "This may clash with the global pos label selector and generate duplicate callback errors. "
+                    "If so set block_selector_callbacks=True."
                 )
             self.connector.register_callbacks(app)
 
@@ -484,7 +484,7 @@ class ExplainerPageLayout(ExplainerComponent):
                 state_dict = dict(zip(self.get_state_tuples(), args))
                 return dict(
                     content=self.to_html(state_dict, add_header=True),
-                    filename="dashboard.html", # Mantido filename
+                    filename="dashboard.html",
                 )
             raise PreventUpdate
 
@@ -494,7 +494,7 @@ class ExplainerPageLayout(ExplainerComponent):
             self.page.calculate_dependencies()
         except AttributeError:
             print(
-                f"Aviso: {self.page} não possui um método calculate_dependencies!", # Traduzido
+                f"Warning: {self.page} does not have a calculate_dependencies method!",
                 flush=True,
             )
 
@@ -504,7 +504,7 @@ class ExplainerDashboard:
         self,
         explainer: BaseExplainer = None,
         tabs: Union[ExplainerComponent, List[ExplainerComponent]] = None,
-        title: str = None, #"Explicação do Modelo", # Ajustado capitalização
+        title: str = "Model Explainer",
         name: str = None,
         description: str = None,
         simple=False,
@@ -572,7 +572,7 @@ class ExplainerDashboard:
         Args:
             explainer(): explainer object
             tabs(): single component or list of components
-            title(str, optional): title of dashboard, defaults to 'Explicação do Modelo' # Atualizado docstring
+            title(str, optional): title of dashboard, defaults to 'Model Explainer'
             name (str, optional): name of the dashboard. Used for assigning url in ExplainerHub.
             description (str, optional): summary for dashboard. Gets used for title tooltip and
                 in description for ExplainerHub.
@@ -624,19 +624,19 @@ class ExplainerDashboard:
             shap_interaction(bool, optional): include InteractionsTab if model allows it, defaults to True.
             decision_trees(bool, optional): include DecisionTreesTab if model allows it, defaults to True.
         """
-        print("A construir o ExplainerDashboard...", flush=True) # Traduzido
+        print("Building ExplainerDashboard..", flush=True)
 
         self._store_params(no_param=["explainer", "tabs", "server"])
         self._stored_params["tabs"] = self._tabs_to_yaml(tabs)
 
         if not hasattr(explainer, "__version__"):
             raise ValueError(
-                f"O {explainer.__class__.__name__} foi gerado " # Traduzido
-                "com uma versão de explainerdashboard<0.3 e, portanto, não é " # Traduzido
-                "compatível com esta versão do ExplainerDashboard devido a " # Traduzido
-                "alterações significativas entre versões principais! Por favor, reconstrua " # Traduzido
-                f"o seu {explainer.__class__.__name__} com esta versão, ou " # Traduzido
-                "reverta para explainerdashboard==0.2.20.1!" # Traduzido
+                f"The {explainer.__class__.__name__} was generated "
+                "with a version of explainerdashboard<0.3 and therefore not "
+                "compatible with this version of ExplainerDashboard due to "
+                "breaking changes in between major versions! Please rebuild "
+                f"your {explainer.__class__.__name__} with this version, or "
+                "downgrade back to explainerdashboard==0.2.20.1!"
             )
 
         dynamic_dropdown_threshold = min(
@@ -650,14 +650,14 @@ class ExplainerDashboard:
 
             if parse_version(dash.__version__) > parse_version("2.6.2"):
                 print(
-                    f"AVISO: o número de índices (={len(self.explainer)}) > max_idxs_in_dropdown(={dynamic_dropdown_threshold}). " # Traduzido
-                    f"No entanto, com a sua versão instalada do dash({dash.__version__}) a pesquisa no dropdown pode não funcionar corretamente. " # Traduzido
-                    f"Pode reverter para `pip install dash==2.6.2` que deverá funcionar melhor por agora..." # Traduzido
+                    f"WARNING: the number of idxs (={len(self.explainer)}) > max_idxs_in_dropdown(={dynamic_dropdown_threshold}). "
+                    f"However with your installed version of dash({dash.__version__}) dropdown search may not work smoothly. "
+                    f"You can downgrade to `pip install dash==2.6.2` which should work better for now..."
                 )
 
         if self.description is None:
-            self.description = """Este painel mostra o funcionamento de um modelo de 
-            machine learning treinado e explica as suas previsões.""" # Traduzido
+            self.description = """This dashboard shows the workings of a fitted
+            machine learning model, and explains its predictions."""
             self._stored_params["description"] = self.description
 
         try:
@@ -669,15 +669,15 @@ class ExplainerDashboard:
 
         if self.mode == "dash" and self.is_colab:
             print(
-                "Detetado ambiente Google Colab, a definir mode='external'", flush=True # Traduzido
+                "Detected google colab environment, setting mode='external'", flush=True
             )
             self.mode = "external"
         elif self.mode == "dash" and self.is_notebook:
             print(
-                "Detetado ambiente de notebook, considere definir " # Traduzido
-                "mode='external', mode='inline' ou mode='jupyterlab' " # Traduzido
-                "para manter o notebook interativo enquanto o painel " # Traduzido
-                "está em execução...", # Traduzido
+                "Detected notebook environment, consider setting "
+                "mode='external', mode='inline' or mode='jupyterlab' "
+                "to keep the notebook interactive while the dashboard "
+                "is running...",
                 flush=True,
             )
 
@@ -703,24 +703,24 @@ class ExplainerDashboard:
                 self.logins = [logins]
                 self._stored_params["logins"] = self.logins
             assert isinstance(self.logins, list), (
-                "O parâmetro logins deve ser uma lista de listas de pares str, ex." # Traduzido
-                " logins=[['utilizador1', 'senha1'], ['utilizador2', 'senha2']]!" # Traduzido
+                "Parameter logins should be a list of lists of str pairs, e.g."
+                " logins=[['user1', 'password1'], ['user2', 'password2']]!"
             )
             for login in self.logins:
                 assert isinstance(login, list), (
-                    "O parâmetro logins deve ser uma lista de listas de pares str, " # Traduzido
-                    "ex. logins=[['utilizador1', 'senha1'], ['utilizador2', 'senha2']]!" # Traduzido
+                    "Parameter logins should be a list of lists of str pairs, "
+                    "e.g. logins=[['user1', 'password1'], ['user2', 'password2']]!"
                 )
                 assert isinstance(login[0], str) and isinstance(login[1], str), (
-                    "Para logins como [['utilizador1', 'senha1']] utilizador1 e " # Traduzido
-                    "senha1 devem ser do tipo str!" # Traduzido
+                    "For logins such as [['user1', 'password1']] user1 and "
+                    "password1 should be type(str)!"
                 )
             self.auth = dash_auth.BasicAuth(self.app, self.logins)
-        self.app.title = title # Assume title traduzido
+        self.app.title = title
 
         assert "BaseExplainer" in str(explainer.__class__.mro()), (
-            "explainer deve ser uma instância de BaseExplainer, como " # Traduzido
-            "ClassifierExplainer ou RegressionExplainer!" # Traduzido
+            "explainer should be an instance of BaseExplainer, such as "
+            "ClassifierExplainer or RegressionExplainer!"
         )
 
         if tabs is None:
@@ -738,22 +738,22 @@ class ExplainerDashboard:
                 tabs = []
                 if model_summary and explainer.y_missing:
                     print(
-                        "Nenhuma etiqueta y foi passada para o Explainer, a definir" # Traduzido
-                        " model_summary=False...", # Traduzido
+                        "No y labels were passed to the Explainer, so setting"
+                        " model_summary=False...",
                         flush=True,
                     )
                     model_summary = False
                 if shap_interaction and (not explainer.interactions_should_work):
                     print(
-                        "Para este tipo de modelo e model_output as interações não " # Traduzido
-                        "funcionam, a definir shap_interaction=False...", # Traduzido
+                        "For this type of model and model_output interactions don't "
+                        "work, so setting shap_interaction=False...",
                         flush=True,
                     )
                     shap_interaction = False
                 if decision_trees and not hasattr(explainer, "is_tree_explainer"):
                     print(
-                        "O objeto explainer não tem a propriedade decision_trees. Logo " # Traduzido
-                        "a definir decision_trees=False...", # Traduzido
+                        "The explainer object has no decision_trees property. so "
+                        "setting decision_trees=False...",
                         flush=True,
                     )
                     decision_trees = False
@@ -774,8 +774,8 @@ class ExplainerDashboard:
                     tabs.append(ShapDependenceComposite)
                 if shap_interaction:
                     print(
-                        "Aviso: calcular valores de interação SHAP pode ser lento! " # Traduzido
-                        "Passe shap_interaction=False para remover o separador de interações.", # Traduzido
+                        "Warning: calculating shap interaction values can be slow! "
+                        "Pass shap_interaction=False to remove interactions tab.",
                         flush=True,
                     )
                     tabs.append(ShapInteractionsComposite)
@@ -790,7 +790,7 @@ class ExplainerDashboard:
             self.header_hide_selector = True
             self.header_hide_download = True
 
-        print("A gerar layout...") # Traduzido
+        print("Generating layout...")
         _, i = yield_id(return_i=True)  # store id generator index
         reset_id_generator("db")  # reset id generator to 0 with prefix "db"
         if hasattr(self.explainer, "_index_list"):
@@ -803,8 +803,8 @@ class ExplainerDashboard:
             self.explainer_layout = ExplainerTabsLayout(
                 explainer,
                 tabs,
-                title, # Assume title traduzido
-                description=self.description, # Assume description traduzido
+                title,
+                description=self.description,
                 **update_kwargs(
                     kwargs,
                     header_hide_title=self.header_hide_title,
@@ -821,8 +821,8 @@ class ExplainerDashboard:
             self.explainer_layout = ExplainerPageLayout(
                 explainer,
                 tabs,
-                title, # Assume title traduzido
-                description=self.description, # Assume description traduzido
+                title,
+                description=self.description,
                 **update_kwargs(
                     kwargs,
                     header_hide_title=self.header_hide_title,
@@ -838,15 +838,15 @@ class ExplainerDashboard:
         self.app.layout = self.explainer_layout.layout()
         reset_id_generator(start=i + 1)  # reset id generator to previous index
 
-        print("A calcular dependências...", flush=True) # Traduzido
+        print("Calculating dependencies...", flush=True)
         self.explainer_layout.calculate_dependencies()
         print(
-            "Lembrete: pode guardar o explainer (incluindo dependências calculadas) " # Traduzido
-            "com explainer.dump('explainer.joblib') e " # Traduzido
-            "recarregar com, por exemplo, ClassifierExplainer.from_file('explainer.joblib')", # Traduzido
+            "Reminder: you can store the explainer (including calculated "
+            "dependencies) with explainer.dump('explainer.joblib') and "
+            "reload with e.g. ClassifierExplainer.from_file('explainer.joblib')",
             flush=True,
         )
-        print("A registar callbacks...", flush=True) # Traduzido
+        print("Registering callbacks...", flush=True)
         self.explainer_layout.register_callbacks(self.app)
 
     def to_html(self):
@@ -900,10 +900,10 @@ class ExplainerDashboard:
                 config = arg1
                 assert (
                     "dashboard" in config
-                ), "O ficheiro .yaml não tem o parâmetro `dashboard`." # Traduzido
+                ), ".yaml file does not have `dashboard` param."
                 assert (
                     "explainerfile" in config["dashboard"]
-                ), "O ficheiro .yaml não tem o parâmetro explainerfile" # Traduzido
+                ), ".yaml file does not have explainerfile param"
 
             explainer = BaseExplainer.from_file(config["dashboard"]["explainerfile"])
         else:
@@ -917,8 +917,8 @@ class ExplainerDashboard:
                 explainer = BaseExplainer.from_file(arg1)
             else:
                 raise ValueError(
-                    "Ao passar dois argumentos para ExplainerDashboard.from_config(arg1, arg2), " # Traduzido
-                    "arg1 deve ser um explainer ou um nome de ficheiro de explainer (ex: 'explainer.joblib')!" # Traduzido
+                    "When passing two arguments to ExplainerDashboard.from_config(arg1, arg2), "
+                    "arg1 should either be an explainer or an explainer filename (e.g. 'explainer.joblib')!"
                 )
             if isinstance(arg2, (Path, str)) and str(arg2).endswith(".yaml"):
                 config = yaml.safe_load(open(str(arg2), "r"))
@@ -926,8 +926,8 @@ class ExplainerDashboard:
                 config = arg2
             else:
                 raise ValueError(
-                    "Ao passar dois argumentos para ExplainerDashboard.from_config(arg1, arg2), " # Traduzido
-                    "arg2 deve ser um ficheiro .yaml ou um dict!" # Traduzido
+                    "When passing two arguments to ExplainerDashboard.from_config(arg1, arg2), "
+                    "arg2 should be a .yaml file or a dict!"
                 )
 
         dashboard_params = decode_callables(config["dashboard"]["params"])
@@ -1003,14 +1003,14 @@ class ExplainerDashboard:
                 explainerfile_absolute_path = dashboard_path / explainerfile
 
             print(
-                f"A guardar configuração .yaml para {Path(filepath).absolute()}...", # Traduzido
+                f"Dumping configuration .yaml to {Path(filepath).absolute()}...",
                 flush=True,
             )
             yaml.dump(dashboard_config, open(filepath, "w"))
 
             if dump_explainer:
                 print(
-                    f"A guardar explainer para {explainerfile_absolute_path}...", flush=True # Traduzido
+                    f"Dumping explainer to {explainerfile_absolute_path}...", flush=True
                 )
                 self.explainer.dump(explainerfile_absolute_path)
             return
@@ -1074,8 +1074,6 @@ class ExplainerDashboard:
         self._stored_params = encode_callables(self._stored_params)
 
     def _convert_str_tabs(self, component):
-        # Estas strings são chaves internas, não devem ser traduzidas aqui.
-        # A tradução acontece no título do componente que estas chaves instanciam.
         if isinstance(component, str):
             if component == "importances":
                 return ImportancesComposite
@@ -1118,8 +1116,8 @@ class ExplainerDashboard:
                 )
             else:
                 raise ValueError(
-                    f"Por favor, passe apenas strings ou ExplainerComponents para o parâmetro `tabs`!" # Traduzido
-                    f"Você passou {component.__class__}" # Traduzido
+                    f"Please only pass strings or ExplainerComponents to parameter `tabs`!"
+                    "You passed {component.__class__}"
                 )
 
         if not hasattr(tabs, "__iter__"):
@@ -1141,7 +1139,7 @@ class ExplainerDashboard:
             if isinstance(tab, str):
                 return tab
             elif isinstance(tab, dict):
-                # print(tab) # Mantido para debug, se necessário
+                print(tab)
                 if "component_imports" in tab and tab["component_imports"] is not None:
                     for class_name, module_name in tab["component_imports"].items():
                         if class_name not in globals():
@@ -1158,8 +1156,8 @@ class ExplainerDashboard:
                     return tab_instance
             else:
                 raise ValueError(
-                    "o separador yaml deve ser uma string, ex: 'importances', " # Traduzido
-                    "ou um dict(name=..,module=..,params=...)" # Traduzido
+                    "yaml tab should be either string, e.g. 'importances', "
+                    "or a dict(name=..,module=..,params=...)"
                 )
 
         if not hasattr(yamltabs, "__iter__"):
@@ -1168,7 +1166,7 @@ class ExplainerDashboard:
             instantiate_tab(tab, explainer, name=str(i + 1))
             for i, tab in enumerate(yamltabs)
         ]
-        # print(tabs) # Mantido para debug, se necessário
+        print(tabs)
         return tabs
 
     def _get_dash_app(self):
@@ -1206,8 +1204,8 @@ class ExplainerDashboard:
             )
         else:
             raise ValueError(
-                f"mode=={self.mode} mas deveria estar em " # Traduzido
-                "{'dash', 'inline', 'juypyterlab', 'external'}" # Traduzido
+                f"mode=={self.mode} but should be in "
+                "{'dash', 'inline', 'juypyterlab', 'external'}"
             )
         app.config["suppress_callback_exceptions"] = True
         app.scripts.config.serve_locally = True
@@ -1217,7 +1215,7 @@ class ExplainerDashboard:
     def flask_server(self):
         """returns self.app.server so that it can be exposed to e.g. gunicorn"""
         if self.mode != "dash":
-            print("Aviso: em produção deve provavelmente usar mode='dash'...") # Traduzido
+            print("Warning: in production you should probably use mode='dash'...")
         return self.app.server
 
     def run(self, port=None, host="0.0.0.0", use_waitress=False, mode=None, **kwargs):
@@ -1251,15 +1249,15 @@ class ExplainerDashboard:
 
         if use_waitress and mode != "dash":
             print(
-                f"Aviso: waitress não funciona com mode={self.mode}, " # Traduzido
-                "a usar o servidor JupyterDash em vez disso!", # Traduzido
+                f"Warning: waitress does not work with mode={self.mode}, "
+                "using JupyterDash server instead!",
                 flush=True,
             )
         if mode == "dash":
             if self.mode != "dash":
                 print(
-                    "Aviso: ExplainerDashboard original não foi inicializado " # Traduzido
-                    "com mode='dash'. A reconstruir o painel antes de iniciar:", # Traduzido
+                    "Warning: Original ExplainerDashboard was not initialized "
+                    "with mode='dash'. Rebuilding dashboard before launch:",
                     flush=True,
                 )
                 app = ExplainerDashboard.from_config(
@@ -1269,7 +1267,7 @@ class ExplainerDashboard:
                 app = self.app
 
             print(
-                f"A iniciar ExplainerDashboard em http://{get_local_ip_adress()}:{port}", # Traduzido
+                f"Starting ExplainerDashboard on http://{get_local_ip_adress()}:{port}",
                 flush=True,
             )
             if use_waitress:
@@ -1281,8 +1279,8 @@ class ExplainerDashboard:
         else:
             if self.mode == "dash":
                 print(
-                    "Aviso: ExplainerDashboard original foi inicializado " # Traduzido
-                    "com mode='dash'. A reconstruir o painel antes de iniciar:", # Traduzido
+                    "Warning: Original ExplainerDashboard was initialized "
+                    "with mode='dash'. Rebuilding dashboard before launch:",
                     flush=True,
                 )
                 app = ExplainerDashboard.from_config(
@@ -1293,23 +1291,23 @@ class ExplainerDashboard:
             if mode == "external":
                 if not self.is_colab or self.mode == "external":
                     print(
-                        f"A iniciar ExplainerDashboard em http://{get_local_ip_adress()}:{port}\n" # Traduzido
-                        "Pode terminar o painel com " # Traduzido
-                        f"ExplainerDashboard.terminate({port})", # Traduzido
+                        f"Starting ExplainerDashboard on http://{get_local_ip_adress()}:{port}\n"
+                        "You can terminate the dashboard with "
+                        f"ExplainerDashboard.terminate({port})",
                         flush=True,
                     )
                 app.run_server(port=port, mode=mode, **kwargs)
             elif mode in ["inline", "jupyterlab"]:
                 print(
-                    f"A iniciar ExplainerDashboard inline (termine com " # Traduzido
-                    f"ExplainerDashboard.terminate({port}))", # Traduzido
+                    f"Starting ExplainerDashboard inline (terminate it with "
+                    f"ExplainerDashboard.terminate({port}))",
                     flush=True,
                 )
                 app.run_server(
                     port=port, mode=mode, width=self.width, height=self.height, **kwargs
                 )
             else:
-                raise ValueError(f"Modo desconhecido: mode='{mode}'!") # Traduzido
+                raise ValueError(f"Unknown mode: mode='{mode}'!")
 
     @classmethod
     def terminate(cls, port, token=None):
@@ -1335,11 +1333,11 @@ class ExplainerDashboard:
             token = JupyterDash._token
 
         shutdown_url = f"http://localhost:{port}/_shutdown_{token}"
-        print(f"A tentar encerrar o painel na porta {port}...") # Traduzido
+        print(f"Trying to shut down dashboard on port {port}...")
         try:
             response = requests.get(shutdown_url)
         except Exception as e:
-            print(f"Algo parece ter falhado: {e}") # Traduzido
+            print(f"Something seems to have failed: {e}")
 
 
 class ExplainerHub:
@@ -1372,7 +1370,7 @@ class ExplainerHub:
     def __init__(
         self,
         dashboards: List[ExplainerDashboard],
-        title: str = "Hub de Explainers", # Traduzido (alternativa: manter "ExplainerHub")
+        title: str = "ExplainerHub",
         description: str = None,
         masonry: bool = False,
         n_dashboard_cols: int = 3,
@@ -1410,7 +1408,7 @@ class ExplainerHub:
         Args:
             dashboards (List[ExplainerDashboard]): list of ExplainerDashboard to
                 include in ExplainerHub.
-            title (str, optional): title to display. Defaults to "Hub de Explainers". # Atualizado docstring
+            title (str, optional): title to display. Defaults to "ExplainerHub".
             description (str, optional): Short description of ExplainerHub.
                 Defaults to default text.
             masonry (bool, optional): Lay out dashboard cards in fluid bootstrap
@@ -1476,14 +1474,14 @@ class ExplainerHub:
 
         if user_json is not None:
             print(
-                "Aviso: user_json está obsoleto, use o parâmetro users_file!" # Traduzido
+                "Warning: user_json has been deprecated, use users_file parameter instead!"
             )
             self.users_file = user_json
         if self.description is None:
             self.description = (
-                "Este Hub de Explainers mostra vários ExplainerDashboards.\n" # Traduzido
-                "Cada painel torna transparente e explicável o funcionamento interno e as previsões de um modelo de machine " # Traduzido
-                "learning treinado." # Traduzido
+                "This ExplainerHub shows a number of ExplainerDashboards.\n"
+                "Each dashboard makes the inner workings and predictions of a trained machine "
+                "learning model transparent and explainable."
             )
             self._stored_params["description"] = self.description
 
@@ -1509,7 +1507,7 @@ class ExplainerHub:
 
         assert (
             self.max_dashboards is None or len(dashboards) <= self.max_dashboards
-        ), f"Deveria haver menos de {self.max_dashboards} painéis no hub." # Traduzido
+        ), f"There should be less than {self.max_dashboards} in the hub."
 
         self.dashboards = self._instantiate_dashboards(dashboards, **kwargs)
         self.added_dashboard_counter = len(self.dashboards)
@@ -1519,18 +1517,18 @@ class ExplainerHub:
 
         if self.add_dashboard_route:
             print(
-                "AVISO: se add_dashboard_route, novos painéis serão adicionados " # Traduzido
-                "a uma instância/worker/nó específico do hub. Logo, isto só " # Traduzido
-                "funcionará se executar o hub como um único worker num único nó!" # Traduzido
+                "WARNING: if you add_dashboard_route new dashboards will be"
+                "added to a specific hub instance/worker/node. So this will"
+                "only work if you run the hub as a single worker on a single node!"
             )
 
         assert len(set(self.dashboard_names)) == len(
             self.dashboard_names
-        ), f"Todas as propriedades .name dos painéis devem ser únicas, mas foram recebidas as seguintes: {self.dashboard_names}" # Traduzido
+        ), f"All dashboard .name properties should be unique, but received the folowing: {self.dashboard_names}"
         illegal_names = list(set(self.dashboard_names) & self.__reserved_names)
         assert (
             not illegal_names
-        ), f"As seguintes propriedades .name para painéis não são permitidas: {illegal_names}!" # Traduzido
+        ), f"The following .name properties for dashboards are not allowed: {illegal_names}!"
 
         if self.users:
             for dashboard in self.dashboards:
@@ -1559,7 +1557,7 @@ class ExplainerHub:
 
         if dashboard_name not in self.dashboard_names:
             raise ValueError(
-                f"{dashboard_name} não é um nome de painel existente. Não é possível removê-lo!" # Traduzido
+                f"{dashboard_name} is not an existing dashboard name. So cannot remove it!"
             )
 
         index_dashboard = self.dashboard_names.index(dashboard_name)
@@ -1587,8 +1585,8 @@ class ExplainerHub:
             and len(self.dashboards) >= self.max_dashboards
         ):
             print(
-                f"Aviso: excedido max_dashboards={self.max_dashboards}, a eliminar " # Traduzido
-                f"o primeiro {self.base_route}/{self.dashboard_names[0]}!", # Traduzido
+                f"Warning: exceeded max_dashboards={self.max_dashboards}, so deleting "
+                f"the first {self.base_route}/{self.dashboard_names[0]}!",
                 flush=True,
             )
             self.remove_dashboard(self.dashboard_names[0])
@@ -1612,7 +1610,7 @@ class ExplainerHub:
         # Dashboard name should not be a reserved name
         if dashboard.name in self.__reserved_names:
             raise ValueError(
-                f"As seguintes propriedades .name para painéis não são permitidas: {dashboard.name}!" # Traduzido
+                f"The following .name properties for dashboards are not allowed: {dashboard.name}!"
             )
 
         # If the dashboard name is unkown we create it
@@ -1628,8 +1626,8 @@ class ExplainerHub:
                     self.add_user(user, password)
                 else:
                     print(
-                        f"Aviso: {user} em {dashboard.name} já existe nos logins do " # Traduzido
-                        "ExplainerHub! Não será adicionado aos logins..." # Traduzido
+                        f"Warning: {user} in {dashboard.name} already in "
+                        "ExplainerHub logins! So not adding to logins..."
                     )
                 self.add_user_to_dashboard(dashboard.name, user)
         config = deepcopy(dashboard.to_yaml(return_dict=True))
@@ -1692,7 +1690,7 @@ class ExplainerHub:
 
         assert (
             "explainerhub" in config
-        ), "YAML malformado: o ficheiro yaml explainerhub deve começar com 'explainerhub:'!" # Traduzido
+        ), "Misformed yaml: explainerhub yaml file should start with 'explainerhub:'!"
 
         config = config["explainerhub"]
 
@@ -1765,7 +1763,7 @@ class ExplainerHub:
             )
         else:
             for dashboard in self.dashboards:
-                print(f"A guardar {dashboard.name}_dashboard.yaml...") # Traduzido
+                print(f"Storing {dashboard.name}_dashboard.yaml...")
                 dashboard.to_yaml(
                     filepath.parent / (dashboard.name + "_dashboard.yaml"),
                     explainerfile=filepath.parent
@@ -1789,7 +1787,7 @@ class ExplainerHub:
             return yaml.dump(hub_config)
 
         filepath = Path(filepath)
-        print(f"A guardar {filepath}...") # Traduzido
+        print(f"Storing {filepath}...")
         yaml.dump(hub_config, open(filepath, "w"))
         return
 
@@ -1854,9 +1852,9 @@ class ExplainerHub:
         for i, dashboard in enumerate(dashboards):
             if dashboard.name is None:
                 print(
-                    "Lembrete, pode definir .name e .description do ExplainerDashboard " # Traduzido
-                    "para controlar o caminho url do painel. Agora " # Traduzido
-                    f"a usar por defeito name=dashboard{i+1} e descrição padrão...", # Traduzido
+                    "Reminder, you can set ExplainerDashboard .name and .description "
+                    "in order to control the url path of the dashboard. Now "
+                    f"defaulting to name=dashboard{i+1} and default description...",
                     flush=True,
                 )
                 dashboard_name = f"dashboard{i+1}"
@@ -1864,7 +1862,7 @@ class ExplainerHub:
                 dashboard_name = dashboard.name
             if dashboard_name in self.__reserved_names:
                 raise ValueError(
-                    f"ERRO! .name do painel não deve estar em {self.__reserved_names}, mas foi encontrado '{dashboard_name}'!" # Traduzido
+                    f"ERROR! dashboard .name should not be in {self.__reserved_names}, but found '{dashboard_name}'!"
                 )
             update_params = dict(
                 server=self.app,
@@ -1878,8 +1876,8 @@ class ExplainerHub:
                         self.add_user(user, password)
                     else:
                         print(
-                            f"Aviso: {user} em {dashboard.name} já existe nos logins do " # Traduzido
-                            "ExplainerHub! Não será adicionado aos logins..." # Traduzido
+                            f"Warning: {user} in {dashboard.name} already in "
+                            "ExplainerHub logins! So not adding to logins..."
                         )
                     self.add_user_to_dashboard(dashboard_name, user)
             config = deepcopy(dashboard.to_yaml(return_dict=True))
@@ -1912,12 +1910,12 @@ class ExplainerHub:
             elif str(users_file).endswith(".yaml"):
                 users_db = yaml.safe_load(open(str(users_file), "r"))
             else:
-                raise ValueError("users_file deve terminar em .json ou .yaml!") # Traduzido
+                raise ValueError("users_file should end with either .json or .yaml!")
 
-            assert "users" in users_db, f"{users_file} deve conter um dict 'users'!" # Traduzido
+            assert "users" in users_db, f"{users_file} should contain a 'users' dict!"
             assert (
                 "dashboard_users" in users_db
-            ), f"{users_file} deve conter um dict 'dashboard_users'!" # Traduzido
+            ), f"{users_file} should contain a 'dashboard_users' dict!"
 
     def _hash_logins(self, logins: List[List], add_to_users_file: bool = False):
         """Turn a list of [user, password] pairs into a Flask-Login style user
@@ -1964,7 +1962,7 @@ class ExplainerHub:
         elif str(users_file).endswith(".yaml"):
             users_db = yaml.safe_load(open(str(users_file), "r"))
         else:
-            raise ValueError("users_file deve terminar em .json ou .yaml!") # Traduzido
+            raise ValueError("users_file should end with either .json or .yaml!")
         return users_db
 
     @staticmethod
@@ -1974,7 +1972,7 @@ class ExplainerHub:
         elif str(users_file).endswith(".yaml"):
             yaml.dump(users_db, open(Path(users_file), "w"))
         else:
-            raise ValueError("users_file deve terminar em .json ou .yaml!") # Traduzido
+            raise ValueError("users_file should end with either .json or .yaml!")
 
     def _dump_all_users_to_file(self, output_users_file: Path = None):
         """Stores all users (both on file and in the instance) to single users_file.
@@ -2250,19 +2248,19 @@ class ExplainerHub:
                                 dbc.CardHeader(
                                     [
                                         html.H3(
-                                            dashboard.title, className="card-title" # Assume dashboard.title traduzido
+                                            dashboard.title, className="card-title"
                                         ),
                                     ]
                                 ),
                                 dbc.CardBody(
                                     [
-                                        html.H6(dashboard.description), # Assume dashboard.description traduzido
+                                        html.H6(dashboard.description),
                                     ]
                                 ),
                                 dbc.CardFooter(
                                     [
                                         dbc.CardLink(
-                                            "Ir para o painel", # Traduzido
+                                            "Go to dashboard",
                                             href=f"/{self.base_route}/{dashboard.name}",
                                             external_link=True,
                                         ),
@@ -2280,18 +2278,18 @@ class ExplainerHub:
                         [
                             dbc.CardHeader(
                                 [
-                                    html.H3(dashboard.title, className="card-title"), # Assume dashboard.title traduzido
+                                    html.H3(dashboard.title, className="card-title"),
                                 ]
                             ),
                             dbc.CardBody(
                                 [
-                                    html.H6(dashboard.description), # Assume dashboard.description traduzido
+                                    html.H6(dashboard.description),
                                 ]
                             ),
                             dbc.CardFooter(
                                 [
                                     dbc.CardLink(
-                                        "Ir para o painel", # Traduzido
+                                        "Go to dashboard",
                                         href=f"/{self.base_route}/{dashboard.name}",
                                         external_link=True,
                                     ),
@@ -2313,9 +2311,9 @@ class ExplainerHub:
             [
                 dbc.Container(
                     [
-                        html.H1(self.title, className="display-3"), # Assume self.title traduzido
+                        html.H1(self.title, className="display-3"),
                         html.Hr(className="my-2"),
-                        html.P(self.description, className="lead"), # Assume self.description traduzido
+                        html.P(self.description, className="lead"),
                     ],
                     fluid=True,
                     class_name="py-3",
@@ -2346,12 +2344,12 @@ class ExplainerHub:
                 if self.bootstrap is not None
                 else None,
             )
-            index_page.title = self.title # Assume self.title traduzido
+            index_page.title = self.title
 
         index_page.layout = dbc.Container(
             [
                 dbc.Row([dbc.Col([header])]),
-                dbc.Row([dbc.Col([html.H2("Painéis:")])]), # Traduzido
+                dbc.Row([dbc.Col([html.H2("Dashboards:")])]),
                 *dashboard_rows,
             ],
             fluid=self.fluid,
@@ -2371,8 +2369,8 @@ class ExplainerHub:
                 card_decks.append(
                     [
                         to_html.dashboard_card(
-                            dashboard.title, # Assume traduzido
-                            dashboard.description, # Assume traduzido
+                            dashboard.title,
+                            dashboard.description,
                             dashboard.name + ".html",
                         )
                         for dashboard in dashboards[i : i + n_cols]
@@ -2381,7 +2379,7 @@ class ExplainerHub:
             if n_last_row > 0:
                 last_row = [
                     to_html.dashboard_card(
-                        dashboard.title, dashboard.description, dashboard.name + ".html" # Assume traduzido
+                        dashboard.title, dashboard.description, dashboard.name + ".html"
                     )
                     for dashboard in dashboards[
                         full_rows * n_cols : full_rows * n_cols + n_last_row
@@ -2392,7 +2390,7 @@ class ExplainerHub:
                 card_decks.append(last_row)
             return card_decks
 
-        html = to_html.jumbotron(self.title, self.description) # Assume traduzido
+        html = to_html.jumbotron(self.title, self.description)
         html += to_html.card_rows(
             *dashboard_cards(self.dashboards, self.n_dashboard_cols)
         )
@@ -2412,11 +2410,11 @@ class ExplainerHub:
         if filename is None:
             return html
         with open(filename, "w") as f:
-            print(f"A guardar hub para {filename}...") # Traduzido
+            print(f"Saving hub to {filename}...")
             f.write(html)
         if save_dashboards:
             for db in self.dashboards:
-                print(f"A guardar painel {db.name} para {db.name}.html...") # Traduzido
+                print(f"Saving dashboard {db.name} to {db.name}.html...")
                 db.save_html(db.name + ".html")
 
     def to_zip(self, filename: Union[str, Path], name: str = "explainerhub"):
@@ -2434,20 +2432,21 @@ class ExplainerHub:
         for db in self.dashboards:
             zf.writestr(f"/{name}/" + db.name + ".html", db.to_html())
         zf.close()
-        print(f"Guardada versão html estática do ExplainerHub em {filename}...") # Traduzido
+        print(f"Saved static html version of ExplainerHub to {filename}...")
 
     def _hub_page(self, route, static=False):
         """Returns a html bootstrap wrapper around a particular flask route (hosting an ExplainerDashbaord)
         It contains:
         - a NavBar with links to all dashboards
         - an iframe containing the flask route
+        - a footer with a link to github.com/oegedijk/explainerdashboard
         """
         if static:
             page = """
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
             """
-            dbs = [(f"{db.name}.html", db.title) for db in self.dashboards] # Assume db.title traduzido
+            dbs = [(f"{db.name}.html", db.title) for db in self.dashboards]
         else:
             page = f"""
             <script type="text/javascript" src=f"{self.app.static_url_path}/jquery-3.5.1.slim.min.js"></script>
@@ -2456,19 +2455,19 @@ class ExplainerHub:
             <link rel="shortcut icon" href=f"{self.app.static_url_path}/favicon.ico">
             """
             dbs = [
-                (f"/{self.base_route}/_{db.name}", db.title) for db in self.dashboards # Assume db.title traduzido
+                (f"/{self.base_route}/_{db.name}", db.title) for db in self.dashboards
             ]
 
         page_login_required = self.users and not self.dbs_open_by_default
 
         page += f"""
-        <title>{self.title}</title>  <!-- Assume self.title traduzido -->
+        <title>{self.title}</title>
         <body>
             <div class="container{'-fluid' if self.fluid else ''} px-4">
                 <nav class="navbar navbar-expand navbar-light bg-light">
                     <div class="container-fluid">
                         <a href="{self.index_route if not static else '#'}" class="navbar-brand">
-                        <h1>{self.title}</h1> <!-- Assume self.title traduzido -->
+                        <h1>{self.title}</h1>
                         </a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
@@ -2478,13 +2477,13 @@ class ExplainerHub:
                                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                     <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Painéis <!-- Traduzido -->
+                                        Dashboards
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        {"".join([f'<li><a n_clicks_timestamp="-1" data-rr-ui-dropdown-item="" class="dropdown-item" href="{url}">{name}</a></li>' for url, name in dbs])} <!-- Assume name (db.title) traduzido -->
+                                        {"".join([f'<li><a n_clicks_timestamp="-1" data-rr-ui-dropdown-item="" class="dropdown-item" href="{url}">{name}</a></li>' for url, name in dbs])}
                                     </ul>
                                     </li>
-                                    {'<li class="nav-item"><a class="nav-link" href="/logout">Sair</a></li>' if not static and page_login_required else ''} <!-- Traduzido -->
+                                    {'<li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>' if not static and page_login_required else ''}
                                 </ul>
                             </div>
                         </form>
@@ -2584,7 +2583,7 @@ class ExplainerHub:
                             )
                             return redirect(f"/dashboards/_{dashboard_name}", code=302)
                     except:
-                        print("ERRO: Falha ao adicionar painel!", flush=True) # Traduzido
+                        print("ERROR: Failed to add dashboard!", flush=True)
                     return redirect("/", code=302)
 
                 remove_dashboard_match = remove_dashboard_pattern.match(request.path)
@@ -2594,7 +2593,7 @@ class ExplainerHub:
                         if dashboard_name in self.dashboard_names:
                             self.remove_dashboard(dashboard_name)
                     except:
-                        print("ERRO: Falha ao remover painel!", flush=True) # Traduzido
+                        print("ERROR: Failed to remove dashboard!", flush=True)
                     return redirect(f"/", code=302)
 
     def flask_server(self):
@@ -2614,7 +2613,7 @@ class ExplainerHub:
         if port is None:
             port = self.port
         print(
-            f"A iniciar ExplainerHub em http://{host}:{port}{self.index_route}", # Traduzido
+            f"Starting ExplainerHub on http://{host}:{port}{self.index_route}",
             flush=True,
         )
         if use_waitress:
@@ -2638,7 +2637,7 @@ class InlineExplainer:
         height: int = 800,
         port: int = 8050,
         **kwargs,
-        ):
+    ):
         """
         :param explainer: an Explainer object
         :param mode: either 'inline', 'jupyterlab' or 'external'
@@ -2651,7 +2650,7 @@ class InlineExplainer:
             "inline",
             "external",
             "jupyterlab",
-            ], "mode deve ser 'inline', 'external' ou 'jupyterlab'!" # Traduzido
+        ], "mode should either be 'inline', 'external' or 'jupyterlab'!"
         self._explainer = explainer
         self._mode = mode
         self._width = width
@@ -2690,11 +2689,11 @@ class InlineExplainer:
             token = JupyterDash._token
 
         shutdown_url = f"http://localhost:{port}/_shutdown_{token}"
-        print(f"A tentar encerrar o painel na porta {port}...") # Traduzido
+        print(f"Trying to shut down dashboard on port {port}...")
         try:
             response = requests.get(shutdown_url)
         except Exception as e:
-            print(f"Algo parece ter falhado: {e}") # Traduzido
+            print(f"Something seems to have failed: {e}")
 
     def _run_app(self, app, **kwargs):
         """Starts the dashboard either inline or in a seperate tab
@@ -2711,24 +2710,24 @@ class InlineExplainer:
             app.run_server(mode=self._mode, port=self._port, **self._kwargs)
         else:
             raise ValueError(
-                "mode deve ser 'inline', 'jupyterlab' ou 'external'!" # Traduzido
+                "mode should either be 'inline', 'jupyterlab'  or 'external'!"
             )
 
     def _run_component(self, component, title):
         app = JupyterDash(__name__)
-        app.title = title # Assume title traduzido
+        app.title = title
         app.layout = component.layout()
         component.register_callbacks(app)
         self._run_app(app)
 
     @delegates_kwargs(ImportancesComponent)
     @delegates_doc(ImportancesComponent)
-    def importances(self, title="Importâncias", **kwargs): # Traduzido title
+    def importances(self, title="Importances", **kwargs):
         """Runs model_summary tab inline in notebook"""
         comp = ImportancesComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
 
-    def model_stats(self, title="Estatísticas do Modelo", **kwargs): # Traduzido title
+    def model_stats(self, title="Models Stats", **kwargs):
         """Runs model_stats inline in notebook"""
         if self._explainer.is_classifier:
             comp = ClassifierModelStatsComposite(self._explainer, **kwargs)
@@ -2738,12 +2737,12 @@ class InlineExplainer:
 
     @delegates_kwargs(PredictionSummaryComponent)
     @delegates_doc(PredictionSummaryComponent)
-    def prediction(self, title="Previsão", **kwargs): # Traduzido title
+    def prediction(self, title="Prediction", **kwargs):
         """Show contributions (permutation or shap) inline in notebook"""
         comp = PredictionSummaryComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
 
-    def random_index(self, title="Índice Aleatório", **kwargs): # Traduzido title
+    def random_index(self, title="Random Index", **kwargs):
         """show random index selector inline in notebook"""
         if self._explainer.is_classifier:
             comp = ClassifierRandomIndexComponent(self._explainer, **kwargs)
@@ -2753,7 +2752,7 @@ class InlineExplainer:
 
     @delegates_kwargs(PdpComponent)
     @delegates_doc(PdpComponent)
-    def pdp(self, title="Gráficos de Dependência Parcial", **kwargs): # Traduzido title
+    def pdp(self, title="Partial Dependence Plots", **kwargs):
         """Show contributions (permutation or shap) inline in notebook"""
         comp = PdpComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
@@ -2775,20 +2774,20 @@ class InlineExplainerComponent:
             if callable(getattr(self, method_name)) and not method_name.startswith("_")
         ]
 
-        return f"InlineExplainer.{self._name} tem os seguintes componentes: {', '.join(component_methods)}" # Traduzido
+        return f"InlineExplainer.{self._name} has the following components: {', '.join(component_methods)}"
 
 
 class InlineExplainerTabs(InlineExplainerComponent):
     @delegates_kwargs(ImportancesComposite)
     @delegates_doc(ImportancesComposite)
-    def importances(self, title="Importâncias", **kwargs): # Traduzido title
+    def importances(self, title="Importances", **kwargs):
         """Show contributions (permutation or shap) inline in notebook"""
         tab = ImportancesComposite(self._explainer, **kwargs)
         self._run_component(tab, title)
 
     @delegates_kwargs(RegressionModelStatsComposite)
     @delegates_doc(RegressionModelStatsComposite)
-    def modelsummary(self, title="Resumo do Modelo", **kwargs): # Traduzido title
+    def modelsummary(self, title="Model Summary", **kwargs):
         """Runs model_summary tab inline in notebook"""
         if self._explainer.is_classifier:
             tab = ClassifierModelStatsComposite(self._explainer, **kwargs)
@@ -2798,35 +2797,35 @@ class InlineExplainerTabs(InlineExplainerComponent):
 
     @delegates_kwargs(IndividualPredictionsComposite)
     @delegates_doc(IndividualPredictionsComposite)
-    def contributions(self, title="Contribuições", **kwargs): # Traduzido title
+    def contributions(self, title="Contributions", **kwargs):
         """Show contributions (permutation or shap) inline in notebook"""
         tab = IndividualPredictionsComposite(self._explainer, **kwargs)
         self._run_component(tab, title)
 
     @delegates_kwargs(WhatIfComposite)
     @delegates_doc(WhatIfComposite)
-    def whatif(self, title="E Se...", **kwargs): # Traduzido title
+    def whatif(self, title="What if...", **kwargs):
         """Show What if... tab inline in notebook"""
         tab = WhatIfComposite(self._explainer, **kwargs)
         self._run_component(tab, title)
 
     @delegates_kwargs(ShapDependenceComposite)
     @delegates_doc(ShapDependenceComposite)
-    def dependence(self, title="Dependência SHAP", **kwargs): # Traduzido title (já estava ok)
+    def dependence(self, title="Shap Dependence", **kwargs):
         """Runs shap_dependence tab inline in notebook"""
         tab = ShapDependenceComposite(self._explainer, **kwargs)
         self._run_component(tab, title)
 
     @delegates_kwargs(ShapInteractionsComposite)
     @delegates_doc(ShapInteractionsComposite)
-    def interactions(self, title="Interações SHAP", **kwargs): # Traduzido title
+    def interactions(self, title="Shap Interactions", **kwargs):
         """Runs shap_interactions tab inline in notebook"""
         tab = ShapInteractionsComposite(self._explainer, **kwargs)
         self._run_component(tab, title)
 
     @delegates_kwargs(DecisionTreesComposite)
     @delegates_doc(DecisionTreesComposite)
-    def decisiontrees(self, title="Árvores de Decisão", **kwargs): # Traduzido title
+    def decisiontrees(self, title="Decision Trees", **kwargs):
         """Runs shap_interactions tab inline in notebook"""
         tab = DecisionTreesComposite(self._explainer, **kwargs)
         self._run_component(tab, title)
@@ -2835,21 +2834,21 @@ class InlineExplainerTabs(InlineExplainerComponent):
 class InlineShapExplainer(InlineExplainerComponent):
     @delegates_kwargs(ShapDependenceComposite)
     @delegates_doc(ShapDependenceComposite)
-    def overview(self, title="Visão Geral SHAP", **kwargs): # Traduzido title
+    def overview(self, title="Shap Overview", **kwargs):
         """Runs shap_dependence tab inline in notebook"""
         comp = ShapDependenceComposite(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(ShapSummaryComponent)
     @delegates_doc(ShapSummaryComponent)
-    def summary(self, title="Resumo SHAP", **kwargs): # Traduzido title
+    def summary(self, title="Shap Summary", **kwargs):
         """Show shap summary inline in notebook"""
         comp = ShapSummaryComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(ShapDependenceComponent)
     @delegates_doc(ShapDependenceComponent)
-    def dependence(self, title="Dependência SHAP", **kwargs): # Traduzido title (já estava ok)
+    def dependence(self, title="Shap Dependence", **kwargs):
         """Show shap summary inline in notebook"""
 
         comp = ShapDependenceComponent(self._explainer, **kwargs)
@@ -2857,35 +2856,35 @@ class InlineShapExplainer(InlineExplainerComponent):
 
     @delegates_kwargs(ShapInteractionsComposite)
     @delegates_doc(ShapInteractionsComposite)
-    def interaction_overview(self, title="Visão Geral das Interações", **kwargs): # Traduzido title
+    def interaction_overview(self, title="Interactions Overview", **kwargs):
         """Runs shap_dependence tab inline in notebook"""
         comp = ShapInteractionsComposite(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(InteractionSummaryComponent)
     @delegates_doc(InteractionSummaryComponent)
-    def interaction_summary(self, title="Resumo das Interações SHAP", **kwargs): # Traduzido title
+    def interaction_summary(self, title="Shap Interaction Summary", **kwargs):
         """show shap interaction summary inline in notebook"""
         comp = InteractionSummaryComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(InteractionDependenceComponent)
     @delegates_doc(InteractionDependenceComponent)
-    def interaction_dependence(self, title="Dependência das Interações SHAP", **kwargs): # Traduzido title
+    def interaction_dependence(self, title="Shap Interaction Dependence", **kwargs):
         """show shap interaction dependence inline in notebook"""
         comp = InteractionDependenceComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(ShapContributionsGraphComponent)
     @delegates_doc(ShapContributionsGraphComponent)
-    def contributions_graph(self, title="Gráfico de Contribuições", **kwargs): # Traduzido title
+    def contributions_graph(self, title="Contributions", **kwargs):
         """Show contributions (permutation or shap) inline in notebook"""
         comp = ShapContributionsGraphComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(ShapContributionsTableComponent)
     @delegates_doc(ShapContributionsTableComponent)
-    def contributions_table(self, title="Tabela de Contribuições", **kwargs): # Traduzido title
+    def contributions_table(self, title="Contributions", **kwargs):
         """Show contributions (permutation or shap) inline in notebook"""
         comp = ShapContributionsTableComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
@@ -2894,14 +2893,14 @@ class InlineShapExplainer(InlineExplainerComponent):
 class InlineClassifierExplainer(InlineExplainerComponent):
     @delegates_kwargs(ClassifierModelStatsComposite)
     @delegates_doc(ClassifierModelStatsComposite)
-    def model_stats(self, title="Estatísticas do Modelo", **kwargs): # Traduzido title
+    def model_stats(self, title="Models Stats", **kwargs):
         """Runs model_stats inline in notebook"""
         comp = ClassifierModelStatsComposite(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(PrecisionComponent)
     @delegates_doc(PrecisionComponent)
-    def precision(self, title="Gráfico de Precisão", **kwargs): # Traduzido title
+    def precision(self, title="Precision Plot", **kwargs):
         """shows precision plot"""
         assert self._explainer.is_classifier
         comp = PrecisionComponent(self._explainer, **kwargs)
@@ -2909,7 +2908,7 @@ class InlineClassifierExplainer(InlineExplainerComponent):
 
     @delegates_kwargs(CumulativePrecisionComponent)
     @delegates_doc(CumulativePrecisionComponent)
-    def cumulative_precision(self, title="Gráfico de Precisão Acumulada", **kwargs): # Traduzido title
+    def cumulative_precision(self, title="Cumulative Precision Plot", **kwargs):
         """shows cumulative precision plot"""
         assert self._explainer.is_classifier
         comp = CumulativePrecisionComponent(self._explainer, **kwargs)
@@ -2917,14 +2916,14 @@ class InlineClassifierExplainer(InlineExplainerComponent):
 
     @delegates_kwargs(ConfusionMatrixComponent)
     @delegates_doc(ConfusionMatrixComponent)
-    def confusion_matrix(self, title="Matriz de Confusão", **kwargs): # Traduzido title
+    def confusion_matrix(self, title="Confusion Matrix", **kwargs):
         """shows precision plot"""
         comp = ConfusionMatrixComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(LiftCurveComponent)
     @delegates_doc(LiftCurveComponent)
-    def lift_curve(self, title="Curva Lift", **kwargs): # Traduzido title
+    def lift_curve(self, title="Lift Curve", **kwargs):
         """shows precision plot"""
         assert self._explainer.is_classifier
         comp = LiftCurveComponent(self._explainer, **kwargs)
@@ -2932,7 +2931,7 @@ class InlineClassifierExplainer(InlineExplainerComponent):
 
     @delegates_kwargs(ClassificationComponent)
     @delegates_doc(ClassificationComponent)
-    def classification(self, title="Classificação", **kwargs): # Traduzido title
+    def classification(self, title="Classification", **kwargs):
         """shows precision plot"""
         assert self._explainer.is_classifier
         comp = ClassificationComponent(self._explainer, **kwargs)
@@ -2940,7 +2939,7 @@ class InlineClassifierExplainer(InlineExplainerComponent):
 
     @delegates_kwargs(RocAucComponent)
     @delegates_doc(RocAucComponent)
-    def roc_auc(self, title="Curva ROC AUC", **kwargs): # Traduzido title
+    def roc_auc(self, title="ROC AUC Curve", **kwargs):
         """shows precision plot"""
         assert self._explainer.is_classifier
         comp = RocAucComponent(self._explainer, **kwargs)
@@ -2948,7 +2947,7 @@ class InlineClassifierExplainer(InlineExplainerComponent):
 
     @delegates_kwargs(PrAucComponent)
     @delegates_doc(PrAucComponent)
-    def pr_auc(self, title="Curva PR AUC", **kwargs): # Traduzido title
+    def pr_auc(self, title="PR AUC Curve", **kwargs):
         """shows precision plot"""
         assert self._explainer.is_classifier
         comp = PrAucComponent(self._explainer, **kwargs)
@@ -2958,14 +2957,14 @@ class InlineClassifierExplainer(InlineExplainerComponent):
 class InlineRegressionExplainer(InlineExplainerComponent):
     @delegates_kwargs(RegressionModelStatsComposite)
     @delegates_doc(RegressionModelStatsComposite)
-    def model_stats(self, title="Estatísticas do Modelo", **kwargs): # Traduzido title
+    def model_stats(self, title="Models Stats", **kwargs):
         """Runs model_stats inline in notebook"""
         comp = RegressionModelStatsComposite(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(PredictedVsActualComponent)
     @delegates_doc(PredictedVsActualComponent)
-    def pred_vs_actual(self, title="Previsto vs Real", **kwargs): # Traduzido title
+    def pred_vs_actual(self, title="Predicted vs Actual", **kwargs):
         "shows predicted vs actual for regression"
         assert self._explainer.is_regression
         comp = PredictedVsActualComponent(self._explainer, **kwargs)
@@ -2973,7 +2972,7 @@ class InlineRegressionExplainer(InlineExplainerComponent):
 
     @delegates_kwargs(ResidualsComponent)
     @delegates_doc(ResidualsComponent)
-    def residuals(self, title="Resíduos", **kwargs): # Traduzido title
+    def residuals(self, title="Residuals", **kwargs):
         "shows residuals for regression"
         assert self._explainer.is_regression
         comp = ResidualsComponent(self._explainer, **kwargs)
@@ -2981,7 +2980,7 @@ class InlineRegressionExplainer(InlineExplainerComponent):
 
     @delegates_kwargs(RegressionVsColComponent)
     @delegates_doc(RegressionVsColComponent)
-    def plots_vs_col(self, title="Gráficos vs Coluna", **kwargs): # Traduzido title
+    def plots_vs_col(self, title="Plots vs col", **kwargs):
         "shows plots vs col for regression"
         assert self._explainer.is_regression
         comp = RegressionVsColComponent(self._explainer, **kwargs)
@@ -2991,28 +2990,28 @@ class InlineRegressionExplainer(InlineExplainerComponent):
 class InlineDecisionTreesExplainer(InlineExplainerComponent):
     @delegates_kwargs(DecisionTreesComposite)
     @delegates_doc(DecisionTreesComposite)
-    def overview(self, title="Visão Geral das Árvores de Decisão", **kwargs): # Traduzido title
+    def overview(self, title="Decision Trees", **kwargs):
         """shap decision tree composite inline in notebook"""
         comp = DecisionTreesComposite(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(DecisionTreesComponent)
     @delegates_doc(DecisionTreesComponent)
-    def decisiontrees(self, title="Árvores de Decisão", **kwargs): # Traduzido title
+    def decisiontrees(self, title="Decision Trees", **kwargs):
         """Runs decision_trees tab inline in notebook"""
         comp = DecisionTreesComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
 
     @delegates_kwargs(DecisionPathTableComponent)
     @delegates_doc(DecisionPathTableComponent)
-    def decisionpath_table(self, title="Tabela do Caminho de Decisão", **kwargs): # Traduzido title
+    def decisionpath_table(self, title="Decision path", **kwargs):
         """Runs decision_trees tab inline in notebook"""
         comp = DecisionPathTableComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
 
-    @delegates_kwargs(DecisionPathTableComponent) # Corrigido para Graph?
-    @delegates_doc(DecisionPathTableComponent) # Corrigido para Graph?
-    def decisionpath_graph(self, title="Gráfico do Caminho de Decisão", **kwargs): # Traduzido title
+    @delegates_kwargs(DecisionPathTableComponent)
+    @delegates_doc(DecisionPathTableComponent)
+    def decisionpath_graph(self, title="Decision path", **kwargs):
         """Runs decision_trees tab inline in notebook"""
-        comp = DecisionPathGraphComponent(self._explainer, **kwargs) # Assumindo que existe DecisionPathGraphComponent
+        comp = DecisionPathTableComponent(self._explainer, **kwargs)
         self._run_component(comp, title)
