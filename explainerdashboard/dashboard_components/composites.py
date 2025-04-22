@@ -29,7 +29,7 @@ class ImportancesComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Importância das Variáveis", # Translated
+        title="Feature Importances",
         name=None,
         hide_title=True,
         hide_importances=False,
@@ -45,7 +45,7 @@ class ImportancesComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Importância das Variáveis". # Updated default
+                        "Feature Importances".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -60,7 +60,6 @@ class ImportancesComposite(ExplainerComponent):
         self.importances = ImportancesComponent(
             explainer, name=self.name + "0", hide_selector=hide_selector, **kwargs
         )
-        # Assuming FeatureDescriptionsComponent title is handled internally or doesn't need translation here
         self.feature_descriptions = FeatureDescriptionsComponent(explainer, **kwargs)
 
         if not self.explainer.descriptions:
@@ -70,7 +69,7 @@ class ImportancesComposite(ExplainerComponent):
         return dbc.Container(
             [
                 make_hideable(
-                    dbc.Row(html.H2(self.title), class_name="mt-4"), # Uses translated title
+                    dbc.Row(html.H2(self.title), class_name="mt-4"),
                     hide=self.hide_title,
                 ),
                 dbc.Row(
@@ -104,7 +103,7 @@ class ImportancesComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.hide(to_html.title(self.title), hide=self.hide_title) # Uses translated title
+        html = to_html.hide(to_html.title(self.title), hide=self.hide_title)
         html += to_html.card_rows(
             [
                 to_html.hide(
@@ -128,7 +127,7 @@ class ClassifierModelStatsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Estatísticas de Classificação", # Translated
+        title="Classification Stats",
         name=None,
         hide_title=True,
         hide_selector=True,
@@ -159,7 +158,7 @@ class ClassifierModelStatsComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Estatísticas de Classificação". # Updated default
+                        "Decision Trees".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -181,7 +180,6 @@ class ClassifierModelStatsComposite(ExplainerComponent):
         """
         super().__init__(explainer, title, name)
 
-        # Assuming the components called here have their titles translated internally or use defaults translated previously
         self.summary = ClassifierModelSummaryComponent(
             explainer, hide_selector=hide_selector, pos_label=pos_label, **kwargs
         )
@@ -233,7 +231,7 @@ class ClassifierModelStatsComposite(ExplainerComponent):
         return dbc.Container(
             [
                 make_hideable(
-                    dbc.Row(html.H2("Desempenho do Modelo:"), class_name="mt-4 gx-4"), # Translated
+                    dbc.Row(html.H2("Model Performance:"), class_name="mt-4 gx-4"),
                     hide=self.hide_title,
                 ),
                 dbc.Row(
@@ -301,8 +299,7 @@ class ClassifierModelStatsComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.hide(to_html.title(self.title), hide=self.hide_title) # Uses translated title
-        # Rows are composed of components, assuming their to_html renders translated content
+        html = to_html.hide(to_html.title(self.title), hide=self.hide_title)
         html += to_html.card_rows(
             [
                 to_html.hide(
@@ -354,7 +351,7 @@ class RegressionModelStatsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Estatísticas de Regressão", # Translated
+        title="Regression Stats",
         name=None,
         hide_title=True,
         hide_modelsummary=False,
@@ -377,7 +374,7 @@ class RegressionModelStatsComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Estatísticas de Regressão". # Updated default
+                        "Regression Stats".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -400,7 +397,6 @@ class RegressionModelStatsComposite(ExplainerComponent):
             "vs_pred",
         ], "pred_or_actual should be 'vs_actual' or 'vs_pred'!"
 
-        # Assuming the components called here have their titles translated internally
         self.modelsummary = RegressionModelSummaryComponent(
             explainer, name=self.name + "0", **kwargs
         )
@@ -422,7 +418,7 @@ class RegressionModelStatsComposite(ExplainerComponent):
         return dbc.Container(
             [
                 make_hideable(
-                    dbc.Row(html.H2("Desempenho do Modelo:"), class_name="mt-4 gx-4"), # Translated
+                    dbc.Row(html.H2("Model Performance:"), class_name="mt-4 gx-4"),
                     hide=self.hide_title,
                 ),
                 dbc.Row(
@@ -454,8 +450,7 @@ class RegressionModelStatsComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.hide(to_html.title(self.title), hide=self.hide_title) # Uses translated title
-        # Rows are composed of components, assuming their to_html renders translated content
+        html = to_html.hide(to_html.title(self.title), hide=self.hide_title)
         html += to_html.card_rows(
             [
                 to_html.hide(
@@ -487,7 +482,7 @@ class IndividualPredictionsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Previsões Individuais", # Translated
+        title="Individual Predictions",
         name=None,
         hide_predindexselector=False,
         hide_predictionsummary=False,
@@ -511,7 +506,7 @@ class IndividualPredictionsComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Previsões Individuais". # Updated default
+                        "Individual Predictions".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -529,9 +524,7 @@ class IndividualPredictionsComposite(ExplainerComponent):
         """
         super().__init__(explainer, title, name)
 
-        # Assuming the components called here have their titles translated internally or use defaults translated previously
         if self.explainer.is_classifier:
-            # Assuming ClassifierRandomIndexComponent & ClassifierPredictionSummaryComponent are translated
             self.index = ClassifierRandomIndexComponent(
                 explainer, hide_selector=hide_selector, **kwargs
             )
@@ -539,7 +532,6 @@ class IndividualPredictionsComposite(ExplainerComponent):
                 explainer, hide_selector=hide_selector, **kwargs
             )
         elif self.explainer.is_regression:
-             # Assuming RegressionRandomIndexComponent & RegressionPredictionSummaryComponent are translated
             self.index = RegressionRandomIndexComponent(
                 explainer, hide_selector=hide_selector, **kwargs
             )
@@ -547,7 +539,6 @@ class IndividualPredictionsComposite(ExplainerComponent):
                 explainer, hide_selector=hide_selector, **kwargs
             )
 
-        # Assuming ShapContributionsGraphComponent, PdpComponent, ShapContributionsTableComponent are translated
         self.contributions = ShapContributionsGraphComponent(
             explainer, hide_selector=hide_selector, **kwargs
         )
@@ -565,7 +556,6 @@ class IndividualPredictionsComposite(ExplainerComponent):
         )
 
     def layout(self):
-        # Layout uses components, assuming their internal layouts are translated
         return dbc.Container(
             [
                 dbc.Row(
@@ -611,8 +601,7 @@ class IndividualPredictionsComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.title(self.title) # Uses translated title
-        # Rows are composed of components, assuming their to_html renders translated content
+        html = to_html.title(self.title)
         html += to_html.card_rows(
             [
                 to_html.hide(
@@ -649,7 +638,7 @@ class WhatIfComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="E se...", # Translated
+        title="What if...",
         name=None,
         hide_whatifindexselector=False,
         hide_inputeditor=False,
@@ -670,7 +659,7 @@ class WhatIfComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "E se...". # Updated default
+                        "Individual Predictions".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -693,21 +682,18 @@ class WhatIfComposite(ExplainerComponent):
         super().__init__(explainer, title, name)
 
         if "hide_whatifcontribution" in kwargs:
-            # Warning message translation (optional, might be for developer)
             print(
-                "Aviso: hide_whatifcontribution será descontinuado, use hide_whatifcontributiongraph em vez disso!"
+                "Warning: hide_whatifcontribution will be deprecated, use hide_whatifcontributiongraph instead!"
             )
             self.hide_whatifcontributiongraph = kwargs["hide_whatifcontribution"]
 
-        # Assuming FeatureInputComponent handles internal translations
         self.input = FeatureInputComponent(
             explainer,
             hide_selector=hide_selector,
-            n_input_cols=n_input_cols, # Use self.n_input_cols defined in constructor
+            n_input_cols=self.n_input_cols,
             **update_params(kwargs, hide_index=False),
         )
 
-        # Assuming the components called here have their titles translated internally or use defaults translated previously
         if self.explainer.is_classifier:
             self.index = ClassifierRandomIndexComponent(
                 explainer, hide_selector=hide_selector, **kwargs
@@ -725,7 +711,6 @@ class WhatIfComposite(ExplainerComponent):
                 explainer, feature_input_component=self.input, **kwargs
             )
 
-        # Assuming ShapContributionsGraphComponent, ShapContributionsTableComponent, PdpComponent are translated
         self.contribgraph = ShapContributionsGraphComponent(
             explainer,
             feature_input_component=self.input,
@@ -753,11 +738,10 @@ class WhatIfComposite(ExplainerComponent):
         )
 
     def layout(self):
-        # Layout uses components, assuming their internal layouts are translated
         return dbc.Container(
             [
                 make_hideable(
-                    dbc.Row(html.H1(self.title), class_name="mt-4 gx-4"), # Uses translated title
+                    dbc.Row(html.H1(self.title), class_name="mt-4 gx-4"),
                     hide=self.hide_title,
                 ),
                 dbc.Row(
@@ -818,8 +802,7 @@ class WhatIfComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.title(self.title) # Uses translated title
-        # Rows are composed of components, assuming their to_html renders translated content
+        html = to_html.title(self.title)
         html += to_html.card_rows(
             [
                 to_html.hide(
@@ -863,7 +846,7 @@ class ShapDependenceComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Dependência das Variáveis", # Translated
+        title="Feature Dependence",
         name=None,
         hide_selector=True,
         hide_shapsummary=False,
@@ -877,7 +860,7 @@ class ShapDependenceComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Dependência das Variáveis". # Updated default
+                        "Feature Dependence".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -888,20 +871,18 @@ class ShapDependenceComposite(ExplainerComponent):
         """
         super().__init__(explainer, title, name)
 
-        # Assuming ShapSummaryComponent & ShapDependenceComponent handle internal translations
         self.shap_summary = ShapSummaryComponent(
-            self.explainer,
+            self.explainer,  # name=self.name+"0",
             **update_params(kwargs, hide_selector=hide_selector, depth=depth),
         )
         self.shap_dependence = ShapDependenceComponent(
-            self.explainer, hide_selector=hide_selector, **kwargs
+            self.explainer, hide_selector=hide_selector, **kwargs  # name=self.name+"1",
         )
         self.connector = ShapSummaryDependenceConnector(
             self.shap_summary, self.shap_dependence
         )
 
     def layout(self):
-        # Layout uses components, assuming their internal layouts are translated
         return dbc.Container(
             [
                 dbc.Row(
@@ -922,8 +903,7 @@ class ShapDependenceComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.title(self.title) # Uses translated title
-        # Rows are composed of components, assuming their to_html renders translated content
+        html = to_html.title(self.title)
         html += to_html.card_rows(
             [
                 to_html.hide(
@@ -945,7 +925,7 @@ class ShapInteractionsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Interações das Variáveis", # Translated
+        title="Feature Interactions",
         name=None,
         hide_selector=True,
         hide_interactionsummary=False,
@@ -959,7 +939,7 @@ class ShapInteractionsComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Interações das Variáveis". # Updated default
+                        "Feature Interactions".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -969,7 +949,6 @@ class ShapInteractionsComposite(ExplainerComponent):
             depth (int, optional): Initial number of features to display. Defaults to None.
         """
         super().__init__(explainer, title, name)
-        # Assuming InteractionSummaryComponent & InteractionDependenceComponent handle internal translations
         self.interaction_summary = InteractionSummaryComponent(
             explainer, hide_selector=hide_selector, depth=depth, **kwargs
         )
@@ -981,7 +960,6 @@ class ShapInteractionsComposite(ExplainerComponent):
         )
 
     def layout(self):
-         # Layout uses components, assuming their internal layouts are translated
         return dbc.Container(
             [
                 dbc.Row(
@@ -1002,8 +980,7 @@ class ShapInteractionsComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.title(self.title) # Uses translated title
-        # Rows are composed of components, assuming their to_html renders translated content
+        html = to_html.title(self.title)
         html += to_html.card_rows(
             [
                 to_html.hide(
@@ -1025,7 +1002,7 @@ class DecisionTreesComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Árvores de Decisão", # Translated
+        title="Decision Trees",
         name=None,
         hide_treeindexselector=False,
         hide_treesgraph=False,
@@ -1040,13 +1017,13 @@ class DecisionTreesComposite(ExplainerComponent):
         - index selector
         - individual decision trees barchart
         - decision path table
-        - decision path graph
+        - deciion path graph
 
         Args:
             explainer (Explainer): explainer object constructed with either
                         RandomForestClassifierExplainer() or RandomForestRegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Árvores de Decisão". # Updated default
+                        "Decision Trees".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -1061,7 +1038,6 @@ class DecisionTreesComposite(ExplainerComponent):
         """
         super().__init__(explainer, title, name)
 
-        # Assuming DecisionTreesComponent, DecisionPathTableComponent, DecisionPathGraphComponent handle internal translations
         self.trees = DecisionTreesComponent(
             explainer, hide_selector=hide_selector, **kwargs
         )
@@ -1090,7 +1066,6 @@ class DecisionTreesComposite(ExplainerComponent):
         )
 
     def layout(self):
-         # Layout uses components, assuming their internal layouts are translated
         return dbc.Container(
             [
                 dbc.Row(
@@ -1146,8 +1121,7 @@ class DecisionTreesComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.title(self.title) # Uses translated title
-        # Rows are composed of components, assuming their to_html renders translated content
+        html = to_html.title(self.title)
         html += to_html.card_rows(
             [
                 to_html.hide(
@@ -1167,13 +1141,6 @@ class DecisionTreesComposite(ExplainerComponent):
                     self.hide_treepathtable,
                 )
             ],
-            # Missing decisionpath_graph in original to_html, added for consistency if needed
-            # [
-            #     to_html.hide(
-            #         self.decisionpath_graph.to_html(state_dict, add_header=False),
-            #         self.hide_treepathgraph,
-            #     )
-            # ],
         )
         if add_header:
             return to_html.add_header(html)
@@ -1184,7 +1151,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Explicador de Classificador Simples", # Translated
+        title="Simple Classifier Explainer",
         name=None,
         hide_title=False,
         classifier_custom_component="roc_auc",
@@ -1210,7 +1177,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Explicador de Classificador Simples". # Updated default
+                        "Simple Classification Stats".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -1231,7 +1198,6 @@ class SimplifiedClassifierComposite(ExplainerComponent):
         """
         super().__init__(explainer, title=title, name=name)
 
-        # Assuming the components called here have their titles translated internally or use defaults translated previously
         self.confusionmatrix = ConfusionMatrixComponent(
             explainer,
             **update_params(
@@ -1256,7 +1222,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
             self.classifier_custom_component = LiftCurveComponent(
                 explainer, **update_params(kwargs, hide_selector=True)
             )
-        elif classifier_custom_component == "classification": # Corrected typo 'classifiction' to 'classification'
+        elif classifier_custom_component == "classifiction":
             self.classifier_custom_component = ClassificationComponent(
                 explainer, **update_params(kwargs, hide_selector=True)
             )
@@ -1265,11 +1231,10 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                 explainer, **update_params(kwargs, hide_selector=True)
             )
         else:
-            # Error message could also be translated if desired
             raise ValueError(
-                "ERRO: O parâmetro classifier_custom_component do SimplifiedClassifierDashboard "
-                "deve ser um de {'metrics', 'roc_auc', pr_auc', 'precision_graph', 'lift_curve', 'classification'} "
-                f"mas foi passado {classifier_custom_component}!"
+                "ERROR: SimplifiedClassifierDashboard parameter classifier_custom_component "
+                "should be in {'metrics', 'roc_auc', pr_auc', 'precision_graph', 'lift_curve', 'class_graph'} "
+                f"but you passed {classifier_custom_component}!"
             )
 
         # SHAP summary & dependence
@@ -1277,7 +1242,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
             explainer,
             **update_params(
                 kwargs,
-                title="Importância das Variáveis SHAP", # Translated
+                title="Shap Feature Importances",
                 hide_index=True,
                 hide_selector=True,
                 depth=None,
@@ -1313,12 +1278,11 @@ class SimplifiedClassifierComposite(ExplainerComponent):
         )
 
     def layout(self):
-         # Layout uses components, assuming their internal layouts are translated
         return dbc.Container(
             [
                 make_hideable(
                     dbc.Row(
-                        html.H1(self.title, id="simple-classifier-composite-title"), # Uses translated title
+                        html.H1(self.title, id="simple-classifier-composite-title"),
                         class_name="mt-4 gx-4",
                     ),
                     hide=self.hide_title,
@@ -1327,7 +1291,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Desempenho do modelo"), # Translated
+                                html.H2("Model performance"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1351,7 +1315,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H3("Valores SHAP"), # Translated
+                                html.H3("SHAP values"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1373,7 +1337,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Previsões individuais"), # Translated
+                                html.H2("Individual predictions"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1404,8 +1368,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.hide(to_html.title(self.title), hide=self.hide_title) # Uses translated title
-        # Rows are composed of components, assuming their to_html renders translated content
+        html = to_html.hide(to_html.title(self.title), hide=self.hide_title)
         html += to_html.card_rows(
             [
                 to_html.hide(
@@ -1455,7 +1418,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Explicador de Regressão Simples", # Translated
+        title="Simple Regression Explainer",
         name=None,
         hide_title=False,
         regression_custom_component="vs_col",
@@ -1480,7 +1443,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Explicador de Regressão Simples". # Updated default
+                        "Simple Classification Stats".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -1501,7 +1464,6 @@ class SimplifiedRegressionComposite(ExplainerComponent):
         """
         super().__init__(explainer, title, name)
 
-        # Assuming the components called here have their titles translated internally or use defaults translated previously
         self.goodness_of_fit = PredictedVsActualComponent(explainer, **kwargs)
 
         # select custom classifier report metric
@@ -1516,11 +1478,10 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                 explainer, **update_params(kwargs, display="predicted")
             )
         else:
-             # Error message could also be translated if desired
             raise ValueError(
-                "ERRO: O parâmetro regression_custom_component do SimplifiedRegressionDashboard "
-                "deve ser um de {'metrics', 'residuals', 'vs_col'}"
-                f" mas foi passado {regression_custom_component}!"
+                "ERROR: SimplifiedRegressionDashboard parameter "
+                "regression_custom_component should be in {'metrics', 'residuals', 'vs_col'}"
+                f" but you passed {regression_custom_component}!"
             )
 
         # SHAP summary & dependence
@@ -1528,7 +1489,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
             explainer,
             **update_params(
                 kwargs,
-                title="Importância das Variáveis SHAP", # Translated
+                title="Shap Feature Importances",
                 hide_index=True,
                 depth=None,
                 hide_depth=True,
@@ -1555,12 +1516,11 @@ class SimplifiedRegressionComposite(ExplainerComponent):
         )
 
     def layout(self):
-         # Layout uses components, assuming their internal layouts are translated
         return dbc.Container(
             [
                 make_hideable(
                     dbc.Row(
-                        html.H1(self.title, id="simple-regression-composite-title"), # Uses translated title
+                        html.H1(self.title, id="simple-regression-composite-title"),
                         class_name="mt-4 gx-4",
                     ),
                     hide=self.hide_title,
@@ -1569,7 +1529,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Desempenho do modelo"), # Translated
+                                html.H2("Model performance"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1593,7 +1553,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H3("Valores SHAP"), # Translated
+                                html.H3("SHAP values"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1615,7 +1575,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Previsões individuais"), # Translated
+                                html.H2("Individual predictions"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1646,8 +1606,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
         )
 
     def to_html(self, state_dict=None, add_header=True):
-        html = to_html.hide(to_html.title(self.title), hide=self.hide_title) # Uses translated title
-        # Rows are composed of components, assuming their to_html renders translated content
+        html = to_html.hide(to_html.title(self.title), hide=self.hide_title)
         html += to_html.card_rows(
             [
                 to_html.hide(

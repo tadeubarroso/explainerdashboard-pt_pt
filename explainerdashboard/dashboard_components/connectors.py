@@ -20,7 +20,7 @@ class CutoffPercentileComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Limite (Cutoff) Global", # Translated
+        title="Global cutoff",
         name=None,
         hide_title=False,
         hide_cutoff=False,
@@ -44,7 +44,7 @@ class CutoffPercentileComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Limite (Cutoff) Global". # Updated default
+                        "Global Cutoff".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -66,14 +66,13 @@ class CutoffPercentileComponent(ExplainerComponent):
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
 
         if self.description is None:
-            # Translated description
             self.description = """
-        Selecione um limite (cutoff) do modelo tal que todas as probabilidades previstas mais altas
-        que o limite serão rotuladas como positivas, e todas as probabilidades previstas
-        mais baixas que o limite serão rotuladas como negativas. Também pode definir
-        o limite como um percentil de todas as observações. Definir o limite
-        aqui irá automaticamente definir o limite em múltiplos outros componentes
-        conectados.
+        Select a model cutoff such that all predicted probabilities higher than
+        the cutoff will be labeled positive, and all predicted probabilities 
+        lower than the cutoff will be labeled negative. You can also set
+        the cutoff as a percenntile of all observations. Setting the cutoff
+        here will automatically set the cutoff in multiple other connected
+        component. 
         """
         self.register_dependencies(["preds", "pred_percentiles"])
 
@@ -84,12 +83,12 @@ class CutoffPercentileComponent(ExplainerComponent):
                     dbc.CardHeader(
                         [
                             html.H3(
-                                self.title, # Uses translated title
+                                self.title,
                                 className="card-title",
                                 id="cutoffconnector-title-" + self.name,
                             ),
                             dbc.Tooltip(
-                                self.description, # Uses translated description
+                                self.description,
                                 target="cutoffconnector-title-" + self.name,
                             ),
                         ]
@@ -110,8 +109,7 @@ class CutoffPercentileComponent(ExplainerComponent):
                                                             html.Div(
                                                                 [
                                                                     html.Label(
-                                                                        # Translated
-                                                                        "Limite (Cutoff) da probabilidade de previsão:"
+                                                                        "Cutoff prediction probability:"
                                                                     ),
                                                                     dcc.Slider(
                                                                         id="cutoffconnector-cutoff-"
@@ -140,8 +138,7 @@ class CutoffPercentileComponent(ExplainerComponent):
                                                                 + self.name,
                                                             ),
                                                             dbc.Tooltip(
-                                                                # Translated
-                                                                f"Pontuações acima deste limite (cutoff) serão rotuladas como positivas",
+                                                                f"Scores above this cutoff will be labeled positive",
                                                                 target="cutoffconnector-cutoff-div-"
                                                                 + self.name,
                                                                 placement="bottom",
@@ -160,8 +157,7 @@ class CutoffPercentileComponent(ExplainerComponent):
                                                             html.Div(
                                                                 [
                                                                     html.Label(
-                                                                        # Translated
-                                                                        "Percentil de corte das amostras:"
+                                                                        "Cutoff percentile of samples:"
                                                                     ),
                                                                     dcc.Slider(
                                                                         id="cutoffconnector-percentile-"
@@ -170,12 +166,12 @@ class CutoffPercentileComponent(ExplainerComponent):
                                                                         max=0.99,
                                                                         step=0.01,
                                                                         value=self.percentile,
-                                                                        marks={ # Changed marks for percentile representation
-                                                                            0.01: "1%",
-                                                                            0.25: "25%",
-                                                                            0.50: "50%",
-                                                                            0.75: "75%",
-                                                                            0.99: "99%",
+                                                                        marks={
+                                                                            0.01: "0.01",
+                                                                            0.25: "0.25",
+                                                                            0.50: "0.50",
+                                                                            0.75: "0.75",
+                                                                            0.99: "0.99",
                                                                         },
                                                                         included=False,
                                                                         tooltip={
@@ -190,8 +186,7 @@ class CutoffPercentileComponent(ExplainerComponent):
                                                                 + self.name,
                                                             ),
                                                             dbc.Tooltip(
-                                                                # Translated
-                                                                f"exemplo: se definido como percentil=0.9: rotula os 10% de pontuações mais altas como positivas, as restantes negativas.",
+                                                                f"example: if set to percentile=0.9: label the top 10% highest scores as positive, the rest negative.",
                                                                 target="cutoffconnector-percentile-div-"
                                                                 + self.name,
                                                                 placement="bottom",
@@ -225,11 +220,6 @@ class CutoffPercentileComponent(ExplainerComponent):
         )
         def update_cutoff(percentile, pos_label):
             if percentile is not None:
-                # Use explainer logic to find cutoff, round it
-                # triggered_id = dash.callback_context.triggered_id
-                # if triggered_id == "cutoffconnector-percentile-" + self.name: # Check if this callback was triggered by the percentile slider
-                # This check might be needed if cutoff can also be set directly
-                # to avoid loops, but depends on the full context.
                 return np.round(
                     self.explainer.cutoff_from_percentile(
                         percentile, pos_label=pos_label
@@ -238,27 +228,14 @@ class CutoffPercentileComponent(ExplainerComponent):
                 )
             raise PreventUpdate
 
-        # Potentially add callback to update percentile from cutoff if needed:
-        # @app.callback(
-        #     Output("cutoffconnector-percentile-" + self.name, "value"),
-        #     [Input("cutoffconnector-cutoff-" + self.name, "value"),
-        #      Input("pos-label-" + self.name, "value")]
-        # )
-        # def update_percentile(cutoff, pos_label):
-        #     if cutoff is not None:
-        #         # Check if triggered by cutoff slider to avoid loops
-        #         triggered_id = dash.callback_context.triggered_id
-        #         if triggered_id == "cutoffconnector-cutoff-" + self.name:
-        #             return np.round(self.explainer.percentile_from_cutoff(cutoff, pos_label=pos_label), 2)
-        #     raise PreventUpdate
-
 
 class PosLabelConnector(ExplainerComponent):
-    # No user-facing strings directly in this component.
-    # Error messages are developer-facing.
     def __init__(self, input_pos_label, output_pos_labels):
         self.input_pos_label_name = self._get_pos_label(input_pos_label)
         self.output_pos_label_names = self._get_pos_labels(output_pos_labels)
+        # if self.input_pos_label_name in self.output_pos_label_names:
+        #     # avoid circulat callbacks
+        #     self.output_pos_label_names.remove(self.input_pos_label_name)
 
     def _get_pos_label(self, input_pos_label):
         if isinstance(input_pos_label, PosLabelSelector):
@@ -281,15 +258,12 @@ class PosLabelConnector(ExplainerComponent):
             if isinstance(o, PosLabelSelector):
                 return ["pos-label-" + o.name]
             elif isinstance(o, str):
-                return [str] # Should likely be [o] if it's a string name
+                return [str]
             elif hasattr(o, "pos_labels"):
                 return o.pos_labels
-            # Adding case for ExplainerComponent with selector attribute
-            elif hasattr(o, "selector") and isinstance(o.selector, PosLabelSelector):
-                return ["pos-label-" + o.selector.name]
             return []
 
-        if hasattr(output_pos_labels, "__iter__") and not isinstance(output_pos_labels, str): # Check it's iterable but not a string
+        if hasattr(output_pos_labels, "__iter__"):
             pos_labels = []
             for comp in output_pos_labels:
                 pos_labels.extend(get_pos_labels(comp))
@@ -299,6 +273,7 @@ class PosLabelConnector(ExplainerComponent):
 
     def component_callbacks(self, app):
         if self.output_pos_label_names:
+
             @app.callback(
                 [
                     Output(pos_label_name, "value")
@@ -307,17 +282,10 @@ class PosLabelConnector(ExplainerComponent):
                 [Input(self.input_pos_label_name, "value")],
             )
             def update_pos_labels(pos_label):
-                # Check if the trigger was the input component to prevent loops if connections are bidirectional
-                if dash.callback_context.triggered_id != self.input_pos_label_name:
-                     raise PreventUpdate
-                if pos_label is None: # Prevent updating if input is None
-                    raise PreventUpdate
                 return tuple(pos_label for i in range(len(self.output_pos_label_names)))
 
 
 class CutoffConnector(ExplainerComponent):
-    # No user-facing strings directly in this component.
-    # Error messages are developer-facing.
     def __init__(self, input_cutoff, output_cutoffs):
         """Connect the cutoff selector of input_cutoff with those of output_cutoffs.
 
@@ -353,40 +321,24 @@ class CutoffConnector(ExplainerComponent):
                 f"{o} is neither str nor an ExplainerComponent with an .cutoff_name property"
             )
 
-        if hasattr(cutoffs, "__iter__") and not isinstance(cutoffs, str): # Check it's iterable but not a string
+        if hasattr(cutoffs, "__iter__"):
             cutoff_name_list = []
             for cutoff in cutoffs:
                 cutoff_name_list.append(get_cutoff_name(cutoff))
-            # Filter out the input cutoff name if present to avoid circular dependency output
-            # input_name = get_cutoff_name(cutoffs[0]) # Assuming the input is implicitly the first? No, input is separate.
-            # This logic needs refinement if input can be part of the list.
-            # For now, assuming input_cutoff is separate.
             return cutoff_name_list
         else:
             return get_cutoff_name(cutoffs)
 
     def component_callbacks(self, app):
-        # Ensure outputs don't include the input to prevent circular callbacks
-        valid_output_names = [name for name in self.output_cutoff_names if name != self.input_cutoff_name]
-        if not valid_output_names:
-             return # No valid outputs to connect
-
         @app.callback(
-            [Output(cutoff_name, "value") for cutoff_name in valid_output_names],
+            [Output(cutoff_name, "value") for cutoff_name in self.output_cutoff_names],
             [Input(self.input_cutoff_name, "value")],
         )
         def update_cutoffs(cutoff):
-            # Check if the trigger was the input component
-            if dash.callback_context.triggered_id != self.input_cutoff_name:
-                 raise PreventUpdate
-            if cutoff is None: # Prevent updating if input is None
-                 raise PreventUpdate
-            return tuple(cutoff for i in range(len(valid_output_names)))
+            return tuple(cutoff for i in range(len(self.output_cutoff_names)))
 
 
 class IndexConnector(ExplainerComponent):
-    # No user-facing strings directly in this component.
-    # Error messages are developer-facing.
     def __init__(self, input_index, output_indexes, explainer=None):
         """Connect the index selector of input_index with those of output_indexes.
 
@@ -403,7 +355,6 @@ class IndexConnector(ExplainerComponent):
                         should have a .index_name property.
             output_indexes (list(str, ExplainerComponent)): list of str of
                         ExplainerComponents.
-            explainer (Explainer, optional): explainer object to validate index.
         """
         self.input_index_name = self.index_name(input_index)
         self.output_index_names = self.index_name(output_indexes)
@@ -424,7 +375,7 @@ class IndexConnector(ExplainerComponent):
                 f"{o} is neither str nor an ExplainerComponent with an .index_name property"
             )
 
-        if hasattr(indexes, "__iter__") and not isinstance(indexes, str): # Check it's iterable but not a string
+        if hasattr(indexes, "__iter__"):
             index_name_list = []
             for index in indexes:
                 index_name_list.append(get_index_name(index))
@@ -433,35 +384,22 @@ class IndexConnector(ExplainerComponent):
             return get_index_name(indexes)
 
     def component_callbacks(self, app):
-         # Ensure outputs don't include the input to prevent circular callbacks
-        valid_output_names = [name for name in self.output_index_names if name != self.input_index_name]
-        if not valid_output_names:
-             return # No valid outputs to connect
-
         @app.callback(
-            [Output(index_name, "value") for index_name in valid_output_names],
+            [Output(index_name, "value") for index_name in self.output_index_names],
             [Input(self.input_index_name, "value")],
         )
         def update_indexes(index):
-            # Check if the trigger was the input component
             if dash.callback_context.triggered_id != self.input_index_name:
                 raise PreventUpdate
-
-            if index is None:
-                raise PreventUpdate
-
             if self.explainer is not None:
-                if self.explainer.index_exists(index):
-                    return tuple([index for _ in valid_output_names])
-                else: # Index is not None but invalid
-                    raise PreventUpdate
-            else: # No explainer to validate, pass index if not None
-                return tuple([index for _ in valid_output_names])
+                if index is not None and self.explainer.index_exists(index):
+                    return tuple([index for _ in self.output_index_names])
+            elif index is not None:
+                return tuple([index for _ in self.output_index_names])
+            raise PreventUpdate
 
 
 class HighlightConnector(ExplainerComponent):
-    # No user-facing strings directly in this component.
-    # Error messages are developer-facing.
     def __init__(self, input_highlight, output_highlights):
         """Connect the highlight selector of input_highlight with those of output_highlights.
 
@@ -497,7 +435,7 @@ class HighlightConnector(ExplainerComponent):
                 f"{o} is neither str nor an ExplainerComponent with an .highlight_name property"
             )
 
-        if hasattr(highlights, "__iter__") and not isinstance(highlights, str): # Check it's iterable but not a string
+        if hasattr(highlights, "__iter__"):
             highlight_name_list = []
             for highlight in highlights:
                 highlight_name_list.append(get_highlight_name(highlight))
@@ -506,21 +444,12 @@ class HighlightConnector(ExplainerComponent):
             return get_highlight_name(highlights)
 
     def component_callbacks(self, app):
-        # Ensure outputs don't include the input to prevent circular callbacks
-        valid_output_names = [name for name in self.output_highlight_names if name != self.input_highlight_name]
-        if not valid_output_names:
-             return # No valid outputs to connect
-
         @app.callback(
             [
                 Output(highlight_name, "value")
-                for highlight_name in valid_output_names
+                for highlight_name in self.output_highlight_names
             ],
             [Input(self.input_highlight_name, "value")],
         )
         def update_highlights(highlight):
-             # Check if the trigger was the input component
-            if dash.callback_context.triggered_id != self.input_highlight_name:
-                raise PreventUpdate
-            # Highlight can potentially be None or other types, pass through directly
-            return tuple(highlight for i in range(len(valid_output_names)))
+            return tuple(highlight for i in range(len(self.output_highlight_names)))
