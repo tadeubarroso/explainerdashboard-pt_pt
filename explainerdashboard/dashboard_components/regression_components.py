@@ -93,7 +93,7 @@ class RegressionRandomIndexComponent(ExplainerComponent):
             description (str, optional): Tooltip to display when hover over
                 component title. When None default text is shown.
         """
-        super().__init__(explainer, title or f"Select {explainer.index_name}", name)
+        super().__init__(explainer, title or f"Selecione o {explainer.index_name}", name)
         assert self.explainer.is_regression, (
             "explainer não é um RegressionExplainer, pelo que o RegressionRandomIndexComponent "
             "não funcionará. Tente usar o ClassifierRandomIndexComponent em vez disso."
@@ -176,15 +176,15 @@ class RegressionRandomIndexComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = f"""
-        You can select a {self.explainer.index_name} directly by choosing it 
-        from the dropdown (if you start typing you can search inside the list),
-        or hit the Random {self.explainer.index_name} button to randomly select
-        a {self.explainer.index_name} that fits the constraints. For example
-        you can select a {self.explainer.index_name} with a very high predicted
-        {self.explainer.target}, or a very low observed {self.explainer.target},
-        or a {self.explainer.index_name} whose predicted {self.explainer.target} 
-        was very far off from the observed {self.explainer.target} and so had a 
-        high (absolute) residual.
+        Pode selecionar um {self.explainer.index_name} diretamente escolhendo-o
+        na lista pendente (se começar a escrever, pode pesquisar dentro da lista),
+        ou clique no botão '{self.explainer.index_name} Aleatório' para selecionar aleatoriamente
+        um {self.explainer.index_name} que cumpra as restrições. Por exemplo,
+        pode selecionar um {self.explainer.index_name} com um {self.explainer.target} previsto
+        muito alto, ou um {self.explainer.target} observado muito baixo,
+        ou um {self.explainer.index_name} cujo {self.explainer.target} previsto
+        estava muito longe do {self.explainer.target} observado e, por isso, tinha um
+        resíduo (absoluto) alto.
         """
 
     def layout(self):
@@ -813,7 +813,7 @@ class RegressionModelSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Model Summary",
+        title="Sumário do Modelo",
         name=None,
         subtitle="Métricas quantitativas para o desempenho do modelo",
         hide_title=False,
@@ -845,8 +845,8 @@ class RegressionModelSummaryComponent(ExplainerComponent):
         super().__init__(explainer, title, name)
         if self.description is None:
             self.description = f"""
-        In the table below you can find a number of regression performance 
-        metrics that describe how well the model is able to predict 
+        Na tabela abaixo pode encontrar várias métricas de desempenho de regressão
+        que descrevem quão bem o modelo consegue prever
         {self.explainer.target}.
         """
         self.register_dependencies(["preds", "residuals"])
@@ -1382,17 +1382,16 @@ class ResidualsComponent(ExplainerComponent):
         super().__init__(explainer, title, name)
 
         assert residuals in ["difference", "ratio", "log-ratio"], (
-            "parameter residuals should in ['difference', 'ratio', 'log-ratio']"
-            f" but you passed residuals={residuals}"
+            "o parâmetro residuals deve estar em ['difference', 'ratio', 'log-ratio']"
+            f" mas passou residuals={residuals}"
         )
 
         if self.description is None:
             self.description = f"""
-        The residuals are the difference between the observed {self.explainer.target}
-        and predicted {self.explainer.target}. In this plot you can check if 
-        the residuals are higher or lower for higher/lower actual/predicted outcomes. 
-        So you can check if the model works better or worse for different {self.explainer.target}
-        levels.
+        Os resíduos são a diferença entre o {self.explainer.target} observado
+        e o {self.explainer.target} previsto. Neste gráfico, pode verificar se
+        os resíduos são maiores ou menores para resultados observados/previstos mais altos/baixos.
+        Assim, pode verificar se o modelo funciona melhor ou worse para diferentes níveis de {self.explainer.target}.
         """
 
         self.popout = GraphPopout(
@@ -1688,11 +1687,11 @@ class RegressionVsColComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = f"""
-        This plot shows either residuals (difference between observed {self.explainer.target}
-        and predicted {self.explainer.target}) plotted against the values of different features,
-        or the observed or predicted {self.explainer.target}.
-        This allows you to inspect whether the model is more wrong for particular
-        range of feature values than others. 
+        Este gráfico mostra os resíduos (diferença entre o {self.explainer.target} observado
+        e o {self.explainer.target} previsto) plotados contra os valores de diferentes características,
+        ou o {self.explainer.target} observado ou previsto.
+        Isto permite inspecionar se o modelo está mais errado para intervalos específicos
+        de valores de características do que para outros.
         """
         self.popout = GraphPopout(
             "reg-vs-col-" + self.name + "popout",

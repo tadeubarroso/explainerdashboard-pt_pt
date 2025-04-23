@@ -132,14 +132,14 @@ class ClassifierRandomIndexComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = f"""
-        You can select a {self.explainer.index_name} directly by choosing it 
-        from the dropdown (if you start typing you can search inside the list),
-        or hit the Random {self.explainer.index_name} button to randomly select
-        a {self.explainer.index_name} that fits the constraints. For example
-        you can select a {self.explainer.index_name} where the observed
-        {self.explainer.target} is {self.explainer.labels[0]} but the
-        predicted probability of {self.explainer.labels[1]} is very high. This
-        allows you to for example sample only false positives or only false negatives.
+        Pode selecionar um {self.explainer.index_name} diretamente, escolhendo-o
+        na lista pendente (se começar a digitar, pode pesquisar dentro da lista),
+        ou clicar no botão '{self.explainer.index_name} Aleatório' para selecionar aleatoriamente
+        um {self.explainer.index_name} que se ajuste às restrições. Por exemplo,
+        pode selecionar um {self.explainer.index_name} onde o
+        {self.explainer.target} observado é {self.explainer.labels[0]} mas a
+        probabilidade prevista de {self.explainer.labels[1]} é muito alta. Isto
+        permite-lhe, por exemplo, amostrar apenas falsos positivos ou apenas falsos negativos.
         """
 
     def layout(self):
@@ -151,7 +151,7 @@ class ClassifierRandomIndexComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        f"Select {self.explainer.index_name}",
+                                        f"Selecionar {self.explainer.index_name}",
                                         id="random-index-clas-title-" + self.name,
                                     ),
                                     make_hideable(
@@ -195,13 +195,13 @@ class ClassifierRandomIndexComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Button(
-                                                f"Random {self.explainer.index_name}",
+                                                f"{self.explainer.index_name} Aleatório",
                                                 color="primary",
                                                 id="random-index-clas-button-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select a random {self.explainer.index_name} according to the constraints",
+                                                f"Selecionar um {self.explainer.index_name} aleatório de acordo com as restrições",
                                                 target="random-index-clas-button-"
                                                 + self.name,
                                             ),
@@ -220,13 +220,13 @@ class ClassifierRandomIndexComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                f"Observed {self.explainer.target}:",
+                                                f"{self.explainer.target} Observado:"
                                                 id="random-index-clas-labels-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Only select a random {self.explainer.index_name} where the observed "
-                                                f"{self.explainer.target} is one of the selected labels:",
+                                                f"Selecionar apenas um {self.explainer.index_name} aleatório onde o "
+                                                f"{self.explainer.target} observado é um dos rótulos selecionados:",
                                                 target="random-index-clas-labels-label-"
                                                 + self.name,
                                             ),
@@ -250,7 +250,7 @@ class ClassifierRandomIndexComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Range:",
+                                                "Intervalo:",
                                                 html_for="random-index-clas-pred-or-perc-"
                                                 + self.name,
                                             ),
@@ -259,22 +259,22 @@ class ClassifierRandomIndexComponent(ExplainerComponent):
                                                 + self.name,
                                                 options=[
                                                     {
-                                                        "label": "probability",
+                                                        "label": "probabilidade",
                                                         "value": "predictions",
                                                     },
                                                     {
-                                                        "label": "percentile",
+                                                        "label": "percentil",
                                                         "value": "percentiles",
                                                     },
                                                 ],
                                                 value=self.pred_or_perc,
                                             ),
                                             dbc.Tooltip(
-                                                "Instead of selecting from a range of predicted probabilities "
-                                                "you can also select from a range of predicted percentiles. "
-                                                "For example if you set the slider to percentile (0.9-1.0) you would"
-                                                f" only sample random {self.explainer.index_name} from the top "
-                                                "10% highest predicted probabilities.",
+                                                "Em vez de selecionar a partir de um intervalo de probabilidades previstas, "
+                                                "pode também selecionar a partir de um intervalo de percentis previstos. "
+                                                "Por exemplo, se definir o slider para percentil (0.9-1.0), iria"
+                                                f" apenas amostrar {self.explainer.index_name} aleatórios dos "
+                                                "10% com as probabilidades previstas mais altas.",
                                                 target="random-index-clas-pred-or-perc-div-"
                                                 + self.name,
                                             ),
@@ -349,7 +349,7 @@ class ClassifierRandomIndexComponent(ExplainerComponent):
         args = self.get_state_args(state_dict)
 
         html = to_html.card(
-            f"Selected index: <b>{self.explainer.get_index(args['index'])}</b>",
+            f"Índice selecionado: <b>{self.explainer.get_index(args['index'])}</b>",
             title=self.title,
         )
         if add_header:
@@ -408,18 +408,18 @@ class ClassifierRandomIndexComponent(ExplainerComponent):
         def update_slider_label(pred_or_perc, pos_label):
             if pred_or_perc == "predictions":
                 return (
-                    "Predicted probability range:",
-                    f"Only select a random {self.explainer.index_name} where the "
-                    f"predicted probability of {self.explainer.labels[pos_label]}"
-                    " is in the following range:",
+                    "Intervalo de probabilidade prevista:",
+                    f"Selecionar apenas um {self.explainer.index_name} aleatório onde a "
+                    f"probabilidade prevista de {self.explainer.labels[pos_label]}"
+                    " está no seguinte intervalo:",
                 )
             elif pred_or_perc == "percentiles":
                 return (
-                    "Predicted percentile range:",
-                    f"Only select a random {self.explainer.index_name} where the "
-                    f"predicted probability of {self.explainer.labels[pos_label]}"
-                    " is in the following percentile range. For example you can "
-                    "only sample from the top 10% highest predicted probabilities.",
+                    "Intervalo de percentil previsto:",
+                    f"Selecionar apenas um {self.explainer.index_name} aleatório onde a "
+                    f"probabilidade prevista de {self.explainer.labels[pos_label]}"
+                    " está no seguinte intervalo de percentil. Por exemplo, pode "
+                    "apenas amostrar dos 10% com as probabilidades previstas mais altas.",
                 )
             raise PreventUpdate
 
@@ -432,7 +432,7 @@ class ClassifierPredictionSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Prediction",
+        title="Previsão",
         name=None,
         hide_index=False,
         hide_title=False,
@@ -500,7 +500,7 @@ class ClassifierPredictionSummaryComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = f"""
-        Shows the predicted probability for each {self.explainer.target} label.
+        Mostra a probabilidade prevista para cada rótulo de {self.explainer.target}.
         """
 
         self.register_dependencies("metrics")
@@ -643,7 +643,7 @@ class ClassifierPredictionSummaryComponent(ExplainerComponent):
                 preds_df = self._format_preds_df(preds_df)
                 html = to_html.row(to_html.table_from_df(preds_df), to_html.fig(fig))
             else:
-                html = f"<div>input data incorrect</div>"
+                html = f"<div>dados de entrada incorretos</div>"
 
         html = to_html.card(html, title=self.title)
         if add_header:
@@ -717,9 +717,9 @@ class PrecisionComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Precision Plot",
+        title="Gráfico de Precisão",
         name=None,
-        subtitle="Does fraction positive increase with predicted probability?",
+        subtitle="A fração de positivos aumenta com a probabilidade prevista?",
         hide_title=False,
         hide_subtitle=False,
         hide_footer=False,
@@ -776,14 +776,14 @@ class PrecisionComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = f"""
-        On this plot you can see the relation between the predicted probability
-        that a {self.explainer.index_name} belongs to the positive class, and
-        the percentage of observed {self.explainer.index_name} in the positive class.
-        The observations get binned together in groups of roughly 
-        equal predicted probabilities, and the percentage of positives is calculated
-        for each bin. A perfectly calibrated model would show a straight line
-        from the bottom left corner to the top right corner. A strong model would
-        classify most observations correctly and close to 0% or 100% probability.
+        Neste gráfico, pode ver a relação entre a probabilidade prevista
+        de que um {self.explainer.index_name} pertence à classe positiva e
+        a percentagem de {self.explainer.index_name} observados na classe positiva.
+        As observações são agrupadas em grupos de probabilidades previstas
+        aproximadamente iguais, e a percentagem de positivos é calculada
+        para cada grupo (bin). Um modelo perfeitamente calibrado mostraria uma linha reta
+        do canto inferior esquerdo para o canto superior direito. Um modelo forte
+        classificaria a maioria das observações corretamente e perto de 0% ou 100% de probabilidade.
         """
         self.popout = GraphPopout(
             "precision-" + self.name + "popout",
@@ -879,7 +879,7 @@ class PrecisionComponent(ExplainerComponent):
                                                         html.Div(
                                                             [
                                                                 dbc.Label(
-                                                                    "Bin size:",
+                                                                    "Tamanho do Intervalo (Bin):",
                                                                     html_for="precision-binsize-"
                                                                     + self.name,
                                                                 ),
@@ -917,7 +917,7 @@ class PrecisionComponent(ExplainerComponent):
                                                             style=dict(margin=5),
                                                         ),
                                                         dbc.Tooltip(
-                                                            "Size of the bins to divide prediction score by",
+                                                            "Tamanho dos intervalos (bins) para dividir a pontuação de previsão",
                                                             target="precision-bin-size-div-"
                                                             + self.name,
                                                             placement="bottom",
@@ -932,7 +932,7 @@ class PrecisionComponent(ExplainerComponent):
                                                         html.Div(
                                                             [
                                                                 dbc.Label(
-                                                                    "Quantiles:",
+                                                                    "Quantis:",
                                                                     html_for="precision-quantiles-"
                                                                     + self.name,
                                                                 ),
@@ -967,7 +967,7 @@ class PrecisionComponent(ExplainerComponent):
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                            "Number of equally populated bins to divide prediction score by",
+                                                            "Número de intervalos (bins) com igual número de observações para dividir a pontuação de previsão",
                                                             target="precision-quantiles-div-"
                                                             + self.name,
                                                             placement="bottom",
@@ -982,7 +982,7 @@ class PrecisionComponent(ExplainerComponent):
                                                         html.Div(
                                                             [
                                                                 html.Label(
-                                                                    "Cutoff prediction probability:"
+                                                                    "Limite (cutoff) da probabilidade de previsão:"
                                                                 ),
                                                                 dcc.Slider(
                                                                     id="precision-cutoff-"
@@ -1009,7 +1009,7 @@ class PrecisionComponent(ExplainerComponent):
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                            f"Scores above this cutoff will be labeled positive",
+                                                            f"Pontuações acima deste limite (cutoff) serão rotuladas como positivas",
                                                             target="precision-cutoff-div-"
                                                             + self.name,
                                                             placement="bottom",
@@ -1029,7 +1029,7 @@ class PrecisionComponent(ExplainerComponent):
                                         dbc.Col(
                                             [
                                                 dbc.Label(
-                                                    "Binning Method:",
+                                                    "Método de Agrupamento (Binning):",
                                                     html_for="precision-binsize-or-quantiles-"
                                                     + self.name,
                                                 ),
@@ -1038,11 +1038,11 @@ class PrecisionComponent(ExplainerComponent):
                                                     + self.name,
                                                     options=[
                                                         {
-                                                            "label": "Bins",
+                                                            "label": "Intervalos (Bins)",
                                                             "value": "bin_size",
                                                         },
                                                         {
-                                                            "label": "Quantiles",
+                                                            "label": "Quantis",
                                                             "value": "quantiles",
                                                         },
                                                     ],
@@ -1050,8 +1050,8 @@ class PrecisionComponent(ExplainerComponent):
                                                     size="sm",
                                                 ),
                                                 dbc.Tooltip(
-                                                    "Divide the x-axis by equally sized ranges of prediction scores (bins),"
-                                                    " or bins with the same number of observations (counts) in each bin: quantiles",
+                                                    "Dividir o eixo X por intervalos de tamanho igual das pontuações de previsão (Intervalos), "
+                                                    "ou por intervalos com o mesmo número de observações (Quantis)",
                                                     target="precision-binsize-or-quantiles-"
                                                     + self.name,
                                                 ),
@@ -1066,20 +1066,20 @@ class PrecisionComponent(ExplainerComponent):
                                                 dbc.Row(
                                                     [
                                                         dbc.Label(
-                                                            "Multi class:",
+                                                            "Multiclasse:",
                                                             id="precision-multiclass-label-"
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                            "Display the observed proportion for all class"
-                                                            " labels, not just positive label.",
+                                                            "Exibir a proporção observada para todos os "
+                                                            "rótulos de classe, não apenas para o rótulo positivo.",
                                                             target="precision-multiclass-"
                                                             + self.name,
                                                         ),
                                                         dbc.Checklist(
                                                             options=[
                                                                 {
-                                                                    "label": "Display all classes",
+                                                                    "label": "Exibir todas as classes",
                                                                     "value": True,
                                                                 }
                                                             ],
@@ -1205,9 +1205,9 @@ class ConfusionMatrixComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Confusion Matrix",
+        title="Matriz de Confusão",
         name=None,
-        subtitle="How many false positives and false negatives?",
+        subtitle="Quantos falsos positivos e falsos negativos?",
         hide_title=False,
         hide_subtitle=False,
         hide_footer=False,
@@ -1262,14 +1262,14 @@ class ConfusionMatrixComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        The confusion matrix shows the number of true negatives (predicted negative, observed negative), 
-        true positives (predicted positive, observed positive), 
-        false negatives (predicted negative, but observed positive) and
-        false positives (predicted positive, but observed negative). The amount
-        of false negatives and false positives determine the costs of deploying
-        and imperfect model. For different cutoffs you will get a different number
-        of false positives and false negatives. This plot can help you select
-        the optimal cutoff.
+        A matriz de confusão mostra o número de verdadeiros negativos (previsto negativo, observado negativo),
+        verdadeiros positivos (previsto positivo, observado positivo),
+        falsos negativos (previsto negativo, mas observado positivo) e
+        falsos positivos (previsto positivo, mas observado negativo). A quantidade
+        de falsos negativos e falsos positivos determina os custos de implementação
+        de um modelo imperfeito. Para diferentes limites (cutoffs), obterá um número diferente
+        de falsos positivos e falsos negativos. Este gráfico pode ajudá-lo a selecionar
+        o limite (cutoff) ótimo.
         """
 
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
@@ -1350,7 +1350,7 @@ class ConfusionMatrixComponent(ExplainerComponent):
                                         html.Div(
                                             [
                                                 html.Label(
-                                                    "Cutoff prediction probability:"
+                                                    "Limite (cutoff) da probabilidade de previsão:"
                                                 ),
                                                 dcc.Slider(
                                                     id="confusionmatrix-cutoff-"
@@ -1375,7 +1375,7 @@ class ConfusionMatrixComponent(ExplainerComponent):
                                             + self.name,
                                         ),
                                         dbc.Tooltip(
-                                            f"Scores above this cutoff will be labeled positive",
+                                            f"Pontuações acima deste limite (cutoff) serão rotuladas como positivas",
                                             target="confusionmatrix-cutoff-div-"
                                             + self.name,
                                             placement="bottom",
@@ -1392,14 +1392,14 @@ class ConfusionMatrixComponent(ExplainerComponent):
                                             [
                                                 # dbc.Label("Percentage:", id='confusionmatrix-percentage-label-'+self.name),
                                                 dbc.Tooltip(
-                                                    "Highlight the percentage in each cell instead of the absolute numbers",
+                                                    "Destacar a percentagem em cada célula em vez dos números absolutos",
                                                     target="confusionmatrix-percentage-"
                                                     + self.name,
                                                 ),
                                                 dbc.Checklist(
                                                     options=[
                                                         {
-                                                            "label": "Highlight percentage",
+                                                            "label": "Destacar percentagem",
                                                             "value": True,
                                                         }
                                                     ],
@@ -1424,22 +1424,22 @@ class ConfusionMatrixComponent(ExplainerComponent):
                                             [
                                                 dbc.Label("Normalisation:"),
                                                 dbc.Tooltip(
-                                                    "Normalize the percentages in the confusion matrix over the true observations, predicted values or overall",
+                                                    "Normalizar as percentagens na matriz de confusão sobre as observações verdadeiras, valores previstos ou geral",
                                                     target="confusionmatrix-normalize-"
                                                     + self.name,
                                                 ),
                                                 dbc.RadioItems(
                                                     options=[
                                                         {
-                                                            "label": "Overall",
+                                                            "label": "Geral",
                                                             "value": "all",
                                                         },
                                                         {
-                                                            "label": "Observed",
+                                                            "label": "Observado",
                                                             "value": "observed",
                                                         },
                                                         {
-                                                            "label": "Predicted",
+                                                            "label": "Previsto",
                                                             "value": "pred",
                                                         },
                                                     ],
@@ -1460,21 +1460,21 @@ class ConfusionMatrixComponent(ExplainerComponent):
                                         dbc.Row(
                                             [
                                                 dbc.Label(
-                                                    "Binary:",
+                                                    "Binário:",
                                                     id="confusionmatrix-binary-label-"
                                                     + self.name,
                                                 ),
                                                 dbc.Tooltip(
-                                                    "display a binary confusion matrix of positive "
-                                                    "class vs all other classes instead of a multi"
-                                                    " class confusion matrix.",
+                                                    "exibir uma matriz de confusão binária da classe positiva "
+                                                    "vs todas as outras classes em vez de uma matriz de confusão "
+                                                    "multiclasse.",
                                                     target="confusionmatrix-binary-label-"
                                                     + self.name,
                                                 ),
                                                 dbc.Checklist(
                                                     options=[
                                                         {
-                                                            "label": "Display one-vs-rest matrix",
+                                                            "label": "Exibir matriz um-contra-todos",
                                                             "value": True,
                                                         }
                                                     ],
@@ -1549,9 +1549,9 @@ class LiftCurveComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Lift Curve",
+        title="Curva Lift",
         name=None,
-        subtitle="Performance how much better than random?",
+        subtitle="Desempenho quanto melhor que aleatório?",
         hide_title=False,
         hide_subtitle=False,
         hide_footer=False,
@@ -1601,9 +1601,9 @@ class LiftCurveComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        The lift curve shows you the percentage of positive classes when you only
-        select observations with a score above cutoff vs selecting observations
-        randomly. This shows you how much better the model is than random (the lift).
+        A curva lift mostra a percentagem de classes positivas quando seleciona
+        apenas observações com uma pontuação acima do limite (cutoff) vs. selecionar observações
+        aleatoriamente. Isto mostra o quanto o modelo é melhor do que a seleção aleatória (o lift).
         """
 
         self.popout = GraphPopout(
@@ -1685,7 +1685,7 @@ class LiftCurveComponent(ExplainerComponent):
                                         html.Div(
                                             [
                                                 html.Label(
-                                                    "Cutoff prediction probability:"
+                                                    "Limite (cutoff) da probabilidade de previsão:"
                                                 ),
                                                 dcc.Slider(
                                                     id="liftcurve-cutoff-" + self.name,
@@ -1708,7 +1708,7 @@ class LiftCurveComponent(ExplainerComponent):
                                             id="liftcurve-cutoff-div-" + self.name,
                                         ),
                                         dbc.Tooltip(
-                                            f"Scores above this cutoff will be labeled positive",
+                                            f"Pontuações acima deste limite (cutoff) serão rotuladas como positivas",
                                             target="liftcurve-cutoff-div-" + self.name,
                                             placement="bottom",
                                         ),
@@ -1723,15 +1723,15 @@ class LiftCurveComponent(ExplainerComponent):
                                         dbc.Row(
                                             [
                                                 dbc.Tooltip(
-                                                    "Display percentages positive and sampled"
-                                                    " instead of absolute numbers",
+                                                    "Exibir percentagens de positivos e amostrados"
+                                                    " em vez de números absolutos",
                                                     target="liftcurve-percentage-"
                                                     + self.name,
                                                 ),
                                                 dbc.Checklist(
                                                     options=[
                                                         {
-                                                            "label": "Display percentage",
+                                                            "label": "Exibir percentagem",
                                                             "value": True,
                                                         }
                                                     ],
@@ -1755,15 +1755,15 @@ class LiftCurveComponent(ExplainerComponent):
                                         dbc.Row(
                                             [
                                                 dbc.Tooltip(
-                                                    "Display how a perfect model would perform"
-                                                    "(the so-called 'wizard')",
+                                                    "Exibir como um modelo perfeito se comportaria "
+                                                    "(o chamado 'wizard' ou referência perfeita)",
                                                     target="liftcurve-wizard-"
                                                     + self.name,
                                                 ),
                                                 dbc.Checklist(
                                                     options=[
                                                         {
-                                                            "label": "Display wizard",
+                                                            "label": "Exibir 'wizard' (referência perfeita)",
                                                             "value": True,
                                                         }
                                                     ],
@@ -1832,9 +1832,9 @@ class CumulativePrecisionComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Cumulative Precision",
+        title="Precisão Cumulativa",
         name=None,
-        subtitle="Expected distribution for highest scores",
+        subtitle="Distribuição esperada para as pontuações mais altas",
         hide_title=False,
         hide_subtitle=False,
         hide_footer=False,
@@ -1874,8 +1874,8 @@ class CumulativePrecisionComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        This plot shows the percentage of each label that you can expect when you
-        only sample the top x% highest scores. 
+        Este gráfico mostra a percentagem de cada rótulo que pode esperar quando
+        amostra apenas os x% de pontuações mais altas. 
         """
         self.popout = GraphPopout(
             "cumulative-precision-" + self.name + "popout",
@@ -1955,7 +1955,7 @@ class CumulativePrecisionComponent(ExplainerComponent):
                                                                 html.Div(
                                                                     [
                                                                         html.Label(
-                                                                            "Sample top fraction:"
+                                                                            "Amostrar fração superior (%):"
                                                                         ),
                                                                         dcc.Slider(
                                                                             id="cumulative-precision-percentile-"
@@ -1985,7 +1985,7 @@ class CumulativePrecisionComponent(ExplainerComponent):
                                                                     + self.name,
                                                                 ),
                                                                 dbc.Tooltip(
-                                                                    "Draw the line where you only sample the top x% fraction of all samples",
+                                                                    "Desenhar a linha vertical onde amostra apenas a fração superior x% de todas as amostras",
                                                                     target="cumulative-precision-percentile-div-"
                                                                     + self.name,
                                                                 ),
@@ -2003,7 +2003,7 @@ class CumulativePrecisionComponent(ExplainerComponent):
                                                                 html.Div(
                                                                     [
                                                                         html.Label(
-                                                                            "Cutoff prediction probability:"
+                                                                            "Limite (cutoff) da probabilidade de previsão:"
                                                                         ),
                                                                         dcc.Slider(
                                                                             id="cumulative-precision-cutoff-"
@@ -2032,7 +2032,7 @@ class CumulativePrecisionComponent(ExplainerComponent):
                                                                     + self.name,
                                                                 ),
                                                                 dbc.Tooltip(
-                                                                    f"Scores above this cutoff will be labeled positive",
+                                                                    f"Pontuações acima deste limite (cutoff) serão rotuladas como positivas (linha vertical)",
                                                                     target="cumulative-precision-cutoff-div-"
                                                                     + self.name,
                                                                     placement="bottom",
@@ -2104,9 +2104,9 @@ class ClassificationComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Classification Plot",
+        title="Gráfico de Classificação",
         name=None,
-        subtitle="Distribution of labels above and below cutoff",
+        subtitle="Distribuição dos rótulos acima e abaixo do limite (cutoff)",
         hide_title=False,
         hide_subtitle=False,
         hide_footer=False,
@@ -2153,7 +2153,7 @@ class ClassificationComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        Plot showing the fraction of each class above and below the cutoff.
+        Gráfico mostrando a fração de cada classe acima e abaixo do limite (cutoff).
         """
 
         self.popout = GraphPopout(
@@ -2236,7 +2236,7 @@ class ClassificationComponent(ExplainerComponent):
                                         html.Div(
                                             [
                                                 html.Label(
-                                                    "Cutoff prediction probability:"
+                                                    "Limite (cutoff) da probabilidade de previsão:"
                                                 ),
                                                 dcc.Slider(
                                                     id="classification-cutoff-"
@@ -2260,7 +2260,7 @@ class ClassificationComponent(ExplainerComponent):
                                             id="classification-cutoff-div-" + self.name,
                                         ),
                                         dbc.Tooltip(
-                                            f"Scores above this cutoff will be labeled positive",
+                                            f"Pontuações acima deste limite (cutoff) serão rotuladas como positivas",
                                             target="classification-cutoff-div-"
                                             + self.name,
                                             placement="bottom",
@@ -2276,14 +2276,15 @@ class ClassificationComponent(ExplainerComponent):
                                         dbc.Row(
                                             [
                                                 dbc.Tooltip(
-                                                    "Do not resize the bar chart by absolute number of observations",
+                                                    #"Do not resize the bar chart by absolute number of observations",
+                                                    "Exibir as barras como percentagens (0-100%) em vez de contagens absolutas",
                                                     target="classification-percentage-"
                                                     + self.name,
                                                 ),
                                                 dbc.Checklist(
                                                     options=[
                                                         {
-                                                            "label": "Display percentage",
+                                                            "label": "Exibir percentagem",
                                                             "value": True,
                                                         }
                                                     ],
@@ -2345,9 +2346,9 @@ class RocAucComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="ROC AUC Plot",
+        title="Gráfico ROC AUC",
         name=None,
-        subtitle="Trade-off between False positives and false negatives",
+        subtitle="Compromisso entre Falsos Positivos e Taxa de Verdadeiros Positivos",
         hide_title=False,
         hide_subtitle=False,
         hide_footer=False,
@@ -2463,7 +2464,7 @@ class RocAucComponent(ExplainerComponent):
                                         html.Div(
                                             [
                                                 html.Label(
-                                                    "Cutoff prediction probability:"
+                                                    "Limite (cutoff) da probabilidade de previsão:"
                                                 ),
                                                 dcc.Slider(
                                                     id="rocauc-cutoff-" + self.name,
@@ -2486,7 +2487,7 @@ class RocAucComponent(ExplainerComponent):
                                             id="rocauc-cutoff-div-" + self.name,
                                         ),
                                         dbc.Tooltip(
-                                            f"Scores above this cutoff will be labeled positive",
+                                            f"Marcar o ponto na curva correspondente a este limite (cutoff)",
                                             target="rocauc-cutoff-div-" + self.name,
                                             placement="bottom",
                                         ),
@@ -2536,9 +2537,9 @@ class PrAucComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="PR AUC Plot",
+        title="Gráfico PR AUC",
         name=None,
-        subtitle="Trade-off between Precision and Recall",
+        subtitle="Compromisso entre Precisão e Recall",
         hide_title=False,
         hide_subtitle=False,
         hide_footer=False,
@@ -2580,7 +2581,10 @@ class PrAucComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        Show the trade-off between Precision and Recall in one plot.
+        A curva PR (Precisão-Recall) mostra o compromisso entre Precisão (proporção de
+        previsões positivas que são corretas) e Recall (proporção de positivos reais
+        que foram corretamente identificados) para diferentes limiares. É particularmente útil
+        para conjuntos de dados desequilibrados. A Área Sob a Curva (AUC) resume o desempenho.
         """
         self.popout = GraphPopout(
             "prauc-" + self.name + "popout",
@@ -2656,7 +2660,7 @@ class PrAucComponent(ExplainerComponent):
                                         html.Div(
                                             [
                                                 html.Label(
-                                                    "Cutoff prediction probability:"
+                                                    "Limite (cutoff) da probabilidade de previsão:"
                                                 ),
                                                 dcc.Slider(
                                                     id="prauc-cutoff-" + self.name,
@@ -2679,7 +2683,7 @@ class PrAucComponent(ExplainerComponent):
                                             id="prauc-cutoff-div-" + self.name,
                                         ),
                                         dbc.Tooltip(
-                                            f"Scores above this cutoff will be labeled positive",
+                                            f"Marcar o ponto na curva correspondente a este limite (cutoff)",
                                             target="prauc-cutoff-div-" + self.name,
                                             placement="bottom",
                                         ),
@@ -2728,7 +2732,7 @@ class ClassifierModelSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Model performance metrics",
+        title="Métricas de desempenho do modelo",
         name=None,
         hide_title=False,
         hide_subtitle=False,
@@ -2773,7 +2777,9 @@ class ClassifierModelSummaryComponent(ExplainerComponent):
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
         if self.description is None:
             self.description = """
-        Shows a list of various performance metrics.
+        tra uma lista de várias métricas de desempenho para o modelo.
+        Métricas como Precisão, Recall, F1-Score dependem do limite (cutoff) selecionado.
+        Métricas como ROC AUC e PR AUC avaliam o desempenho em todos os limiares.
         """
 
         self.register_dependencies(["preds", "pred_probas"])
@@ -2823,7 +2829,7 @@ class ClassifierModelSummaryComponent(ExplainerComponent):
                                         html.Div(
                                             [
                                                 html.Label(
-                                                    "Cutoff prediction probability:"
+                                                    "Limite (cutoff) da probabilidade de previsão:"
                                                 ),
                                                 dcc.Slider(
                                                     id="clas-model-summary-cutoff-"
@@ -2848,7 +2854,7 @@ class ClassifierModelSummaryComponent(ExplainerComponent):
                                             + self.name,
                                         ),
                                         dbc.Tooltip(
-                                            f"Scores above this cutoff will be labeled positive",
+                                            f"Pontuações acima deste limiar serão classificadas como positivas.",
                                             target="clas-model-summary-cutoff-div-"
                                             + self.name,
                                             placement="bottom",
