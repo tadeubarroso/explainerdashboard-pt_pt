@@ -125,7 +125,7 @@ def guess_shap(model):
         "NGClassifier",
         "NGBRegressor",
         "GBTClassifier",
-        " GBTRegressor",
+        "GBTRegressor",
         "IsolationForest",
     ]
     linear_models = [
