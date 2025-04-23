@@ -189,11 +189,11 @@ class ShapSummaryComponent(ExplainerComponent):
                                                     dbc.Select(
                                                         options=[
                                                             {
-                                                                "label": "Aggregate",
+                                                                "label": "Agregado",
                                                                 "value": "aggregate",
                                                             },
                                                             {
-                                                                "label": "Detailed",
+                                                                "label": "Detalhado",
                                                                 "value": "detailed",
                                                             },
                                                         ],

@@ -227,7 +227,7 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Button(
-                                                f"Aleatório {self.explainer.index_name}",
+                                                f"{self.explainer.index_name} aleatório",
                                                 color="primary",
                                                 id="random-index-reg-button-"
                                                 + self.name,
@@ -385,10 +385,10 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                                 + self.name,
                                                 options=[
                                                     {
-                                                        "label": "Predicted",
+                                                        "label": "Previsto",
                                                         "value": "preds",
                                                     },
-                                                    {"label": "Observed", "value": "y"},
+                                                    {"label": "Observado", "value": "y"},
                                                 ],
                                                 value=self.pred_or_y,
                                             ),
@@ -921,7 +921,7 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Prediction",
+        title="Previsão",
         name=None,
         hide_index=False,
         hide_title=False,
@@ -970,8 +970,8 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = f"""
-        Shows the predicted {self.explainer.target} and the observed {self.explainer.target},
-        as well as the difference between the two (residual)
+        Mostra o {self.explainer.target} previsto e o {self.explainer.target} observado,
+        bem como a diferença entre os dois (resíduo).
         """
 
     def layout(self):
@@ -1032,7 +1032,7 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
                 )
                 html = to_html.table_from_df(preds_df)
             else:
-                html = "no index selected"
+                html = "nenhum índice selecionado"
         else:
             inputs = {
                 k: v

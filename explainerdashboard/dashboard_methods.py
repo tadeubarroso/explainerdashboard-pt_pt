@@ -639,14 +639,14 @@ class IndexSelector(ExplainerComponent):
             if len(index_list) > self.max_idxs_in_dropdown:
                 return dcc.Dropdown(
                     id=self.name,
-                    placeholder=f"Search {self.explainer.index_name} here...",
+                    placeholder=f"Pesquisar {self.explainer.index_name} aqui...",
                     value=self.index,
                     searchable=True,
                 )
             else:
                 return dcc.Dropdown(
                     id=self.name,
-                    placeholder=f"Select {self.explainer.index_name} here...",
+                    placeholder=f"Selecionar {self.explainer.index_name} aqui...",
                     options=index_list.astype(str).to_list(),
                     searchable=True,
                     value=self.index,
@@ -654,7 +654,7 @@ class IndexSelector(ExplainerComponent):
         else:
             return dbc.Input(
                 id=self.name,
-                placeholder=f"Type {self.explainer.index_name} here...",
+                placeholder=f"Digite {self.explainer.index_name} aqui...",
                 value=self.index,
                 debounce=True,
                 type="text",
