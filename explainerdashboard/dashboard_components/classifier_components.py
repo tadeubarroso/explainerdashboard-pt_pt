@@ -220,7 +220,7 @@ class ClassifierRandomIndexComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                f"{self.explainer.target} Observado:"
+                                                f"{self.explainer.target} Observado:",
                                                 id="random-index-clas-labels-label-"
                                                 + self.name,
                                             ),
