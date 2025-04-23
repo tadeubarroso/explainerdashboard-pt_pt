@@ -29,7 +29,7 @@ class ImportancesComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Feature Importances",
+        title="Importância das Variáveis",
         name=None,
         hide_title=True,
         hide_importances=False,
@@ -127,7 +127,7 @@ class ClassifierModelStatsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Classification Stats",
+        title="Estatísticas de Classificação",
         name=None,
         hide_title=True,
         hide_selector=True,
@@ -231,7 +231,7 @@ class ClassifierModelStatsComposite(ExplainerComponent):
         return dbc.Container(
             [
                 make_hideable(
-                    dbc.Row(html.H2("Model Performance:"), class_name="mt-4 gx-4"),
+                    dbc.Row(html.H2("Desempenho do Modelo:"), class_name="mt-4 gx-4"),
                     hide=self.hide_title,
                 ),
                 dbc.Row(
@@ -351,7 +351,7 @@ class RegressionModelStatsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Regression Stats",
+        title="Estatísticas de Regressão",
         name=None,
         hide_title=True,
         hide_modelsummary=False,
@@ -418,7 +418,7 @@ class RegressionModelStatsComposite(ExplainerComponent):
         return dbc.Container(
             [
                 make_hideable(
-                    dbc.Row(html.H2("Model Performance:"), class_name="mt-4 gx-4"),
+                    dbc.Row(html.H2("Desempenho do Modelo:"), class_name="mt-4 gx-4"),
                     hide=self.hide_title,
                 ),
                 dbc.Row(
@@ -482,7 +482,7 @@ class IndividualPredictionsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Individual Predictions",
+        title="Previsões Individuais",
         name=None,
         hide_predindexselector=False,
         hide_predictionsummary=False,
@@ -638,7 +638,7 @@ class WhatIfComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="What if...",
+        title="E se...",
         name=None,
         hide_whatifindexselector=False,
         hide_inputeditor=False,
@@ -846,7 +846,7 @@ class ShapDependenceComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Feature Dependence",
+        title="Dependência das Variáveis",
         name=None,
         hide_selector=True,
         hide_shapsummary=False,
@@ -925,7 +925,7 @@ class ShapInteractionsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Feature Interactions",
+        title="Interações das Variáveis",
         name=None,
         hide_selector=True,
         hide_interactionsummary=False,
@@ -1002,7 +1002,7 @@ class DecisionTreesComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Decision Trees",
+        title="Árvores de Decisão",
         name=None,
         hide_treeindexselector=False,
         hide_treesgraph=False,
@@ -1151,7 +1151,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Simple Classifier Explainer",
+        title="Explicador de Classificador Simples",
         name=None,
         hide_title=False,
         classifier_custom_component="roc_auc",
@@ -1242,7 +1242,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
             explainer,
             **update_params(
                 kwargs,
-                title="Shap Feature Importances",
+                title="Importância das Variáveis SHAP",
                 hide_index=True,
                 hide_selector=True,
                 depth=None,
@@ -1291,7 +1291,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Model performance"),
+                                html.H2("Desempenho do modelo"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1315,7 +1315,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H3("SHAP values"),
+                                html.H3("Valores SHAP"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1337,7 +1337,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Individual predictions"),
+                                html.H2("Previsões individuais"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1418,7 +1418,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Simple Regression Explainer",
+        title="Explicador de Regressão Simples",
         name=None,
         hide_title=False,
         regression_custom_component="vs_col",
@@ -1489,7 +1489,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
             explainer,
             **update_params(
                 kwargs,
-                title="Shap Feature Importances",
+                title="Importância das Variáveis SHAP",
                 hide_index=True,
                 depth=None,
                 hide_depth=True,
@@ -1529,7 +1529,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Model performance"),
+                                html.H2("Desempenho do modelo"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1553,7 +1553,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H3("SHAP values"),
+                                html.H3("Valores SHAP"),
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1575,7 +1575,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Individual predictions"),
+                                html.H2("Previsões individuais"),
                                 dbc.Row(
                                     [
                                         make_hideable(
