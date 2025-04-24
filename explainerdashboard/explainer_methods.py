@@ -1329,17 +1329,17 @@ def get_contrib_summary_df(
 
     """
     assert model_output in {"raw", "probability", "logodds"}
-    contrib_summary_df = pd.DataFrame(columns=["Reason", "Effect"])
+    contrib_summary_df = pd.DataFrame(columns=["Motivo", "Efeito"])
 
     for _, row in contrib_df.iterrows():
         if row["col"] == "_BASE":
-            reason = "Average of population"
+            reason = "Média da população"
             effect = ""
         elif row["col"] == "_REST":
-            reason = "Other features combined"
+            reason = "Outras características combinadas"
             effect = f"{'+' if row['contribution'] >= 0 else ''}"
         elif row["col"] == "_PREDICTION":
-            reason = "Final prediction"
+            reason = "Previsão final"
             effect = ""
         else:
             if na_fill is not None and row["value"] == na_fill:
