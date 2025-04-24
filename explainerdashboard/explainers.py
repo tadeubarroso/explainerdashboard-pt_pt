@@ -4214,19 +4214,19 @@ class RegressionExplainer(BaseExplainer):
         pred = self.model.predict(X_row).item()
         preds_df = pd.DataFrame(columns=["", self.target])
         preds_df = append_dict_to_df(
-            preds_df, {"": "Predicted", self.target: f"{pred:.{round}f} {self.units}"}
+            preds_df, {"": "Previsto", self.target: f"{pred:.{round}f} {self.units}"}
         )
         if index is not None:
             try:
                 y_true = self.get_y(index)
                 preds_df = append_dict_to_df(
                     preds_df,
-                    {"": "Observed", self.target: f"{y_true:.{round}f} {self.units}"},
+                    {"": "Observado", self.target: f"{y_true:.{round}f} {self.units}"},
                 )
                 preds_df = append_dict_to_df(
                     preds_df,
                     {
-                        "": "Residual",
+                        "": "Resíduo",
                         self.target: f"{(y_true-pred):.{round}f} {self.units}",
                     },
                 )
